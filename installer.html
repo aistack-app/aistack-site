@@ -165,6 +165,21 @@
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(140%); background: var(--green); color: var(--bg); padding: 10px 18px; border-radius: 8px; font-family: var(--mono); font-size: 13px; font-weight: 600; transition: transform 0.3s ease; z-index: 100; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.error { background: var(--red); color: white; }
+  .ts-item { background: var(--bg-3); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+  .ts-head { padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--text); transition: background 0.15s; }
+  .ts-head:hover { background: var(--bg); }
+  .ts-head .ts-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(255,85,119,0.15); color: var(--red); flex-shrink: 0; }
+  .ts-head .ts-tag.amber { background: rgba(255,184,77,0.15); color: var(--yellow); }
+  .ts-head .ts-tag.blue { background: rgba(90,184,255,0.15); color: var(--blue); }
+  .ts-head .ts-arrow { color: var(--text-3); transition: transform 0.2s; }
+  .ts-item.open .ts-arrow { transform: rotate(90deg); }
+  .ts-body { display: none; padding: 0 14px 14px 14px; border-top: 1px dashed var(--border); }
+  .ts-item.open .ts-body { display: block; }
+  .ts-body .ts-cause { font-size: 12px; color: var(--text-2); margin: 10px 0; }
+  .ts-body .ts-cause strong { color: var(--yellow); }
+  .ts-cmd { background: #050605; border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 8px; color: var(--green); font-size: 12px; word-break: break-all; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+  .ts-cmd code { flex: 1; font-family: var(--mono); }
+  .ts-cmd .copy-btn { padding: 4px 10px; font-size: 11px; }
   @media (max-width: 700px) {
     .container { padding: 16px 12px; }
     .terminal { padding: 18px; }
@@ -229,42 +244,106 @@
       </div>
     </div>
 
-    <!-- STEP 1: PREFLIGHT + OpenClaw -->
+    <!-- STEP 1: только ОС -->
     <div class="step" id="step-1">
-      <p class="prompt">./preflight_and_openclaw</p>
-      <h2>Шаг 1 · Проверка системы + OpenClaw</h2>
-      <p class="desc">Проверьте базовый стек. Потом установите OpenClaw.</p>
+      <p class="prompt">./select_os</p>
+      <h2>Шаг 1 · Ваша операционная система</h2>
+      <p class="desc">Просто выберите ОС. Дальше установщик сам соберёт правильный <code>setup</code>-скрипт под неё.</p>
       <div class="input-group">
-        <label class="input-label">Ваша ОС <span class="req">*</span></label>
         <div class="options-grid cols-3">
-          <div class="option" data-value="macos" onclick="pickSingle(this, 'os'); renderPreflight();">
+          <div class="option" data-value="macos" onclick="pickSingle(this, 'os');">
             <div class="option-check"></div>
             <div class="option-content"><div class="option-name">macOS</div><div class="option-desc">Apple Silicon · Intel</div></div>
           </div>
-          <div class="option" data-value="windows" onclick="pickSingle(this, 'os'); renderPreflight();">
+          <div class="option" data-value="windows" onclick="pickSingle(this, 'os');">
             <div class="option-check"></div>
             <div class="option-content"><div class="option-name">Windows</div><div class="option-desc">PowerShell · WSL2</div></div>
           </div>
-          <div class="option" data-value="vps" onclick="pickSingle(this, 'os'); renderPreflight();">
+          <div class="option" data-value="vps" onclick="pickSingle(this, 'os');">
             <div class="option-check"></div>
             <div class="option-content"><div class="option-name">VPS · Linux</div><div class="option-desc">Ubuntu / Debian</div></div>
           </div>
         </div>
       </div>
-      <div id="preflight-section" style="display:none;">
-        <div class="info-box"><strong>📌 Хорошая новость:</strong> вам не надо проверять и ставить это всё руками. <strong>setup-скрипт из bundle.zip сам проверит и поставит</strong> всё что не хватает. Достаточно выбрать ОС и нажать «далее». Список ниже — справочный, для тех кто хочет понимать что будет ставиться.</div>
-        <div id="preflight-list"></div>
-        <h3 style="font-size:14px; margin: 20px 0 10px;">Установка OpenClaw</h3>
-        <div id="openclaw-cmd-macos" class="os-content" style="display:none;">
-          <div class="code-block"><span class="code-text">curl -fsSL https://openclaw.ai/install.sh | bash</span><button class="copy-btn" onclick="copyText(this, 'curl -fsSL https://openclaw.ai/install.sh | bash')">copy</button></div>
+
+      <div class="info-box">
+        <strong>Что произойдёт в финале (<span class="os-label">выберите ОС</span>):</strong>
+
+        <div style="margin: 10px 0;">
+          <strong>1. Скачаете bundle.zip</strong> — на финальном шаге будет кнопка «📦 aistack-bundle.zip».
         </div>
-        <div id="openclaw-cmd-windows" class="os-content" style="display:none;">
-          <div class="code-block"><span class="code-text">iwr -useb https://openclaw.ai/install.ps1 | iex</span><button class="copy-btn" onclick="copyText(this, 'iwr -useb https://openclaw.ai/install.ps1 | iex')">copy</button></div>
+
+        <div style="margin: 10px 0;">
+          <strong>2. Распакуете в любую папку</strong> — например в <code>~/Downloads/aistack/</code>.
         </div>
-        <div id="openclaw-cmd-vps" class="os-content" style="display:none;">
-          <div class="code-block"><span class="code-text">curl -fsSL https://openclaw.ai/install.sh | bash</span><button class="copy-btn" onclick="copyText(this, 'curl -fsSL https://openclaw.ai/install.sh | bash')">copy</button></div>
+
+        <div style="margin: 10px 0;">
+          <strong>3. Запустите setup-скрипт:</strong>
+        </div>
+
+        <!-- macOS -->
+        <div class="os-cmd-block" data-os="macos" style="display:none; background: #050605; border-radius: 6px; padding: 12px; margin: 8px 0; font-family: var(--mono); font-size: 12px; color: var(--green);">
+          <div style="color: var(--text-3); margin-bottom: 4px;"># Откройте Terminal (⌘+пробел → terminal):</div>
+          cd ~/Downloads/aistack-bundle<br>
+          bash setup.sh
+        </div>
+
+        <!-- Windows -->
+        <div class="os-cmd-block" data-os="windows" style="display:none; background: #050605; border-radius: 6px; padding: 12px; margin: 8px 0; font-family: var(--mono); font-size: 12px; color: var(--green);">
+          <div style="color: var(--text-3); margin-bottom: 4px;"># Самый простой способ — двойной клик по setup.bat в Finder:</div>
+          <div style="color: var(--text); padding: 4px 0;">📁 Двойной клик → setup.bat</div>
+          <div style="color: var(--text-3); margin-top: 8px; margin-bottom: 4px;"># Или через PowerShell (правая кнопка по setup.ps1 → Run with PowerShell):</div>
+          powershell -ExecutionPolicy Bypass -File .\setup.ps1
+        </div>
+
+        <!-- VPS -->
+        <div class="os-cmd-block" data-os="vps" style="display:none; background: #050605; border-radius: 6px; padding: 12px; margin: 8px 0; font-family: var(--mono); font-size: 12px; color: var(--green);">
+          <div style="color: var(--text-3); margin-bottom: 4px;"># Подключитесь к VPS по SSH, перенесите bundle (scp) и запустите:</div>
+          cd ~/aistack-bundle<br>
+          bash setup.sh
+        </div>
+
+        <div style="margin: 10px 0;">
+          <strong>4. Скрипт сам пошагово сделает:</strong>
+          <ul style="margin-left: 16px; margin-top: 4px;">
+            <li>✓ Проверит Node.js / Git / Chrome — поставит чего нет</li>
+            <li>✓ Установит OpenClaw</li>
+            <li>✓ Установит Hermes (память)</li>
+            <li>✓ Подключит нейросеть</li>
+            <li>✓ Создаст workspace для каждого агента</li>
+            <li>✓ Подключит Telegram-ботов</li>
+            <li>✓ Запустит Gateway → откроется http://localhost:18789</li>
+          </ul>
         </div>
       </div>
+      <!-- OS-специфичные предупреждения (показываются автоматически по выбору ОС) -->
+      <div class="os-warn-block" data-os="windows" style="display:none; background: rgba(255,184,77,0.08); border: 1px solid rgba(255,184,77,0.35); border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 12.5px;">
+        <div style="font-weight: 700; color: var(--yellow); margin-bottom: 6px; font-size: 12px; text-transform: uppercase;">⚠ важно для Windows · защита от типовых ошибок</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--yellow);">①</strong> Используйте <strong>setup.bat двойным кликом</strong>. PowerShell не понимает синтаксис <code style="color:var(--green);">bash &lt;(curl ...)</code> — это даёт «Оператор &quot;&lt;&quot; зарезервирован для использования в будущем». Установщик подготовит .bat-файл, который сам обойдёт ExecutionPolicy.</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--yellow);">②</strong> Node.js ставим <strong>через nvm-windows</strong>, а не глобально. Иначе ловите <code style="color:var(--red);">npm EACCES /usr/local/lib/node_modules</code> при установке openclaw (массовая проблема в чате клиентов).</div>
+        <div><strong style="color: var(--yellow);">③</strong> setup.bat в bundle уже учитывает обе эти штуки — просто двойной клик.</div>
+      </div>
+
+      <div class="os-warn-block" data-os="macos" style="display:none; background: rgba(255,184,77,0.08); border: 1px solid rgba(255,184,77,0.35); border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 12.5px;">
+        <div style="font-weight: 700; color: var(--yellow); margin-bottom: 6px; font-size: 12px; text-transform: uppercase;">⚠ важно для macOS · защита от типовых ошибок</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--yellow);">①</strong> Если у вас стоит <strong>глобальный Node.js</strong> через <code>brew install node</code> — установщик попросит переустановить через <strong>nvm</strong>. Иначе при <code style="color:var(--red);">npm install -g openclaw</code> получите <code style="color:var(--red);">EACCES permission denied</code> в <code>/usr/local/lib/node_modules</code>.</div>
+        <div><strong style="color: var(--yellow);">②</strong> setup.sh всё проверит автоматически перед началом установки — не торопитесь.</div>
+      </div>
+
+      <div class="os-warn-block" data-os="vps" style="display:none; background: rgba(255,184,77,0.08); border: 1px solid rgba(255,184,77,0.35); border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 12.5px;">
+        <div style="font-weight: 700; color: var(--yellow); margin-bottom: 6px; font-size: 12px; text-transform: uppercase;">⚠ важно для VPS · защита от типовых ошибок</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--yellow);">①</strong> Установка плагинов на VPS занимает <strong>2-5 минут</strong> на медленном диске (acpx, runway, tts-local-cli качают npm-зависимости последовательно). Не путайте с зависанием.</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--yellow);">②</strong> Используйте Node.js через <strong>nvm</strong>, не глобально (root). Меньше проблем с правами на <code>/usr/local/lib/node_modules</code>.</div>
+        <div><strong style="color: var(--yellow);">③</strong> Если уже стоит n8n / docker — порты 18789 (gateway) и 7777 (hermes) должны быть свободны.</div>
+      </div>
+
+      <!-- Защита от регрессии 2026.04.25 (показывается всем) -->
+      <div class="os-warn-block" data-os-any="1" style="display:none; background: rgba(255,85,119,0.08); border: 1px solid rgba(255,85,119,0.35); border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 12.5px;">
+        <div style="font-weight: 700; color: var(--red); margin-bottom: 6px; font-size: 12px; text-transform: uppercase;">🔴 защита от регрессии openclaw 2026.04.25</div>
+        <div>Версия openclaw <code style="color:var(--red);">2026.04.25</code> сломала Gateway у десятков клиентов (закрытие connection 1006). setup-скрипт <strong>принудительно ставит стабильную</strong> <code style="color:var(--green);">openclaw@2026.4.24</code>. Вам делать ничего не нужно — встроено.</div>
+      </div>
+
+      <div id="preflight-section" style="display:none;"></div>
       <div class="actions">
         <button class="btn btn-ghost" onclick="goBack()">← назад</button>
         <span id="preflight-counter" class="comment" style="margin:0;"></span>
@@ -292,25 +371,21 @@
       <div class="input-group" style="margin-top: 20px;">
         <label class="input-label">Подключаем Hermes?</label>
         <div class="options-grid cols-2">
-          <div class="option" data-value="skip" onclick="pickSingle(this, 'hermes')">
+          <div class="option selected" data-value="skip" onclick="pickSingle(this, 'hermes')">
             <div class="option-check"></div>
             <div class="option-content">
-              <div class="option-name">✓ Да, установить автоматически <span class="badge">REC</span></div>
-              <div class="option-desc">setup-скрипт сам всё поставит на ваш компьютер. Ничего делать не надо.</div>
+              <div class="option-name">✓ Да <span class="badge">REC</span></div>
+              <div class="option-desc">setup-скрипт сам поставит и подключит</div>
             </div>
           </div>
-          <div class="option" data-value="ok" onclick="pickSingle(this, 'hermes')">
+          <div class="option" data-value="no" onclick="pickSingle(this, 'hermes')">
             <div class="option-check"></div>
             <div class="option-content">
-              <div class="option-name">⚙ У меня уже стоит</div>
-              <div class="option-desc">только для тех, кто сам поставил Hermes заранее</div>
+              <div class="option-name">⏭ Нет, без памяти</div>
+              <div class="option-desc">агенты забывают контекст между разговорами</div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="info-box" style="margin-top: 20px;">
-        <strong>Что делает setup-скрипт:</strong> ставит Hermes в <code>~/.openclaw/hermes/</code>, запускает его как сервис на порту 7777, подключает к OpenClaw как memory-provider. На macOS через LaunchAgent, на Windows через Scheduled Task, на Linux через systemd. Команды и проверки — внутри bundle.zip, вы их не пишете руками.
       </div>
 
       <div class="actions">
@@ -393,6 +468,29 @@
             <div class="option-desc">Llama/Qwen на своей машине · бесплатно</div>
           </div>
         </div>
+        <div class="option" data-value="openrouter" onclick="pickSingle(this, 'provider'); validateLlmKey();">
+          <div class="option-check"></div>
+          <div class="option-content">
+            <div class="option-name">OpenRouter <span class="badge green">UNI</span></div>
+            <div class="option-desc">100+ моделей через 1 ключ · Claude/GPT/Gemini/Llama · карты любых стран</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Селектор модели для OpenRouter -->
+      <div class="input-group" id="openrouter-model-group" style="display:none;">
+        <label class="input-label">Модель OpenRouter <span class="req">*</span></label>
+        <select class="input" id="openrouter-model" onchange="state.openrouterModel = this.value; saveSession();">
+          <option value="anthropic/claude-sonnet-4">Claude Sonnet 4 (рекомендуем для команды)</option>
+          <option value="anthropic/claude-opus-4">Claude Opus 4 (премиум · в 5× дороже)</option>
+          <option value="openai/gpt-4o">GPT-4o</option>
+          <option value="openai/gpt-5">GPT-5</option>
+          <option value="google/gemini-2.5-pro">Gemini 2.5 Pro</option>
+          <option value="deepseek/deepseek-chat-v3">DeepSeek V3 (самый дешёвый)</option>
+          <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (БЕСПЛАТНО)</option>
+          <option value="mistralai/mistral-small-3.2:free">Mistral Small (БЕСПЛАТНО)</option>
+        </select>
+        <div class="input-hint">для команды AI-агентов берите Claude Sonnet или GPT-4o · бесплатные модели подойдут для тестов</div>
       </div>
 
       <div class="input-group" id="llm-key-group">
@@ -430,7 +528,28 @@
       <p class="prompt">./set_telegram_bot_tokens</p>
       <h2>Шаг 5 · Telegram-боты</h2>
       <p class="desc">Каждый агент = отдельный бот. Создайте в <a href="https://t.me/BotFather" target="_blank">@BotFather</a>.</p>
+
+      <div class="input-group">
+        <label class="input-label">Ваш Telegram user ID (числовой) <span class="req">*</span></label>
+        <input type="text" class="input" id="tg-user-id" placeholder="например: 399453289" oninput="onTgUserIdInput()" inputmode="numeric">
+        <div class="input-hint">узнать у <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> — пришлёт ваш ID одной строкой. Нужно чтобы боты отвечали только вам, а не случайным людям.</div>
+        <div class="input-error" id="tg-user-id-err" style="display:none;"></div>
+      </div>
+
       <div id="tg-tokens-wrap"></div>
+
+      <!-- Автоген правильной команды allowFrom (защита от ошибки --strict-json) -->
+      <div id="allowfrom-cmd-wrap" style="display:none; margin-top: 16px;">
+        <div class="info-box">
+          <strong>✓ Защита от типовой ошибки:</strong> ниже — готовая команда привязки allowFrom <strong>для вашей ОС</strong> с правильным экранированием. setup-скрипт сделает это автоматически — это для справки / отладки.
+          <div style="font-size:11px; color:var(--text-3); margin-top:6px;">Без правильного экранирования ловите <code style="color:var(--red);">Error: Failed to parse JSON value</code> — массовая проблема в чате.</div>
+        </div>
+        <div class="code-block">
+          <span class="code-text" id="allowfrom-cmd"></span>
+          <button class="copy-btn" onclick="copyText(this, document.getElementById('allowfrom-cmd').textContent)">copy</button>
+        </div>
+      </div>
+
       <div class="actions">
         <button class="btn btn-ghost" onclick="goBack()">← назад</button>
         <span id="tg-counter" class="comment" style="margin:0;"></span>
@@ -485,13 +604,27 @@
       <div class="info-box">
         <strong>Что дальше:</strong>
         <ol style="margin-left: 18px; margin-top: 6px;">
-          <li>Скачайте bundle.zip и распакуйте</li>
-          <li>В терминале запустите setup</li>
+          <li>Скачайте bundle.zip и распакуйте в любую папку</li>
+          <li><strong>На macOS/Linux:</strong> терминал → <code>cd ~/Downloads/aistack-bundle</code> → <code>bash setup.sh</code></li>
+          <li><strong>На Windows:</strong> <strong>двойной клик по setup.bat</strong> (он сам разрешит запуск .ps1 без проблем с ExecutionPolicy)</li>
           <li>Скрипт создаст workspace, поставит global_skills, скопирует knowledge</li>
           <li>Откройте localhost:18789 или напишите Агент.exe в Telegram «привет»</li>
           <li>Агент.exe сам задаст 5 вопросов и заполнит USER.md</li>
         </ol>
       </div>
+
+      <!-- Встроенный troubleshoot — топ-10 проблем из базы 6000 сообщений -->
+      <div class="final-block">
+        <div class="final-block-title">🆘 если что-то пошло не так (10 типовых проблем)</div>
+        <div class="info-box" style="margin-bottom: 12px;">
+          База собрана из <strong>1772 жалоб клиентов</strong> в чате поддержки. Каждая решается одной командой ниже. Кликните на проблему — раскроется фикс.
+        </div>
+        <div id="troubleshoot-accordion"></div>
+        <div style="margin-top: 14px; padding: 14px; background: rgba(124,92,255,0.06); border: 1px dashed rgba(124,92,255,0.3); border-radius: 8px; font-size: 12.5px; color: var(--text);">
+          <strong style="color: var(--purple);">📚 Не нашли проблему?</strong> Полная база <strong>25+ кейсов с решениями</strong> — в файле <code>aistack-troubleshoot.md</code> (внутри bundle). Можно скармливать любой нейронке: «вот база решений, у меня проблема X — что делать».
+        </div>
+      </div>
+
       <div class="actions">
         <button class="btn btn-ghost" onclick="goBack()">← изменить</button>
         <button class="btn btn-ghost" onclick="clearAndExit()">очистить ⌫</button>
@@ -605,7 +738,7 @@ const PREFLIGHT = {
 };
 
 const state = {
-  step: 0, tgUsername: '', os: null, preflight: {}, hermes: null, hermesPreflight: {},
+  step: 0, tgUsername: '', tgUserId: '', os: null, preflight: {}, hermes: null, hermesPreflight: {},
   provider: null, llmKey: '', preset: null, tgTokens: {}, selectedKnowledge: new Set(),
   sessionStart: null,
 };
@@ -683,7 +816,17 @@ function goToStep(n) {
     document.getElementById('progress-label').textContent = `шаг ${n} из 7`;
     document.getElementById('progress-name').textContent = '// ' + STEP_NAMES[n];
   } else document.getElementById('progress').style.display = 'none';
-  if (n === 2) renderHermesPreflight();
+  if (n === 2) {
+    renderHermesPreflight();
+    // Дефолт: «Да, установить автоматически» — если ничего не выбрано
+    if (!state.hermes) {
+      state.hermes = 'skip';
+      saveSession();
+      const el = document.querySelector(`#step-2 .option[data-value="skip"]`);
+      if (el) el.classList.add('selected');
+      updateHermesNextBtn();
+    }
+  }
   if (n === 4) renderPresets();
   if (n === 5) renderTgTokens();
   if (n === 6) renderKnowledge();
@@ -698,8 +841,31 @@ function pickSingle(el, key) {
   el.classList.add('selected');
   state[key] = el.dataset.value;
   saveSession();
+  if (key === 'os') {
+    document.getElementById('btn-next-1').disabled = false;
+    // обновляем команды под выбранную ОС в info-box
+    updateOsCommands();
+  }
   if (key === 'hermes') updateHermesNextBtn();
   if (key === 'preset') selectPreset(el.dataset.value);
+}
+function updateOsCommands() {
+  if (!state.os) return;
+  // надпись «выберите ОС» в заголовках
+  const osLabel = { macos: 'macOS', windows: 'Windows', vps: 'VPS · Linux' }[state.os] || '?';
+  document.querySelectorAll('.os-label').forEach(el => el.textContent = osLabel);
+  // показываем команды только для выбранной ОС, остальные прячем
+  document.querySelectorAll('.os-cmd-block').forEach(el => {
+    el.style.display = (el.dataset.os === state.os) ? 'block' : 'none';
+  });
+  // показываем предупреждения только для выбранной ОС + универсальные (data-os-any="1")
+  document.querySelectorAll('.os-warn-block').forEach(el => {
+    if (el.dataset.osAny === '1') el.style.display = 'block';
+    else el.style.display = (el.dataset.os === state.os) ? 'block' : 'none';
+  });
+  // имя файла на финале
+  const dlName = document.getElementById('dl-main-name');
+  if (dlName) dlName.textContent = state.os === 'windows' ? 'setup.bat (для Windows)' : 'setup.sh';
 }
 function updateHermesNextBtn() {
   if (state.hermes === 'skip') { document.getElementById('btn-next-2').disabled = false; return; }
@@ -791,6 +957,7 @@ const LLM_PATTERNS = {
   gemini:       { prefix:'AI',      hint:'формат: AIza... · aistudio.google.com/apikey · бесплатно до 60 req/min' },
   deepseek:     { prefix:'sk-',     hint:'формат: sk-... · platform.deepseek.com · самый дешёвый' },
   ollama:       { noKey: true, hint:'ключ не нужен · работает локально через ollama (нужен ollama serve)' },
+  openrouter:   { prefix:'sk-or-', hint:'формат: sk-or-v1-... · openrouter.ai/keys · 100+ моделей через 1 ключ' },
 };
 function validateLlmKey() {
   const key = document.getElementById('llm-key').value.trim();
@@ -798,8 +965,15 @@ function validateLlmKey() {
   const errEl = document.getElementById('llm-error');
   const inp = document.getElementById('llm-key');
   const group = document.getElementById('llm-key-group');
+  const orGroup = document.getElementById('openrouter-model-group');
   state.llmKey = key;
   saveSession();
+  // показываем/скрываем селектор модели OpenRouter
+  if (orGroup) orGroup.style.display = state.provider === 'openrouter' ? 'block' : 'none';
+  if (state.provider === 'openrouter' && !state.openrouterModel) {
+    state.openrouterModel = 'anthropic/claude-sonnet-4';
+    saveSession();
+  }
   if (!state.provider) {
     hint.textContent = 'сначала выберите провайдера';
     if (group) group.style.display = 'block';
@@ -875,6 +1049,9 @@ function renderTgTokens() {
   const preset = MANIFEST.presets.find(p => p.id === state.preset);
   const wrap = document.getElementById('tg-tokens-wrap');
   if (!preset) return;
+  // Восстанавливаем сохранённый user ID и команду allowFrom
+  const uidEl = document.getElementById('tg-user-id');
+  if (uidEl && state.tgUserId) { uidEl.value = state.tgUserId; renderAllowFromCmd(); }
   const agents = preset.agents.map(aid => MANIFEST.agents.find(a => a.id === aid)).filter(Boolean);
   wrap.innerHTML = agents.map(a => {
     const e = state.tgTokens[a.id] || {};
@@ -900,6 +1077,42 @@ function onTgInput(id) {
   document.getElementById('tg-st-' + id).textContent = '';
   document.getElementById('tg-' + id).classList.remove('valid', 'invalid');
   saveSession(); updateTgCounter();
+}
+
+function onTgUserIdInput() {
+  const v = (document.getElementById('tg-user-id').value || '').trim();
+  const errEl = document.getElementById('tg-user-id-err');
+  if (v && !/^\d{6,12}$/.test(v)) {
+    errEl.textContent = 'Это должен быть числовой ID (6-12 цифр). Если у вас @username — нужен именно числовой ID, узнайте у @userinfobot.';
+    errEl.style.display = 'block';
+    document.getElementById('allowfrom-cmd-wrap').style.display = 'none';
+    state.tgUserId = null;
+  } else {
+    errEl.style.display = 'none';
+    state.tgUserId = v || null;
+    renderAllowFromCmd();
+  }
+  saveSession();
+  updateTgCounter();
+}
+
+function renderAllowFromCmd() {
+  const wrap = document.getElementById('allowfrom-cmd-wrap');
+  const out = document.getElementById('allowfrom-cmd');
+  if (!state.tgUserId || !state.os) { wrap.style.display = 'none'; return; }
+  const id = state.tgUserId;
+  let cmd = '';
+  if (state.os === 'macos' || state.os === 'vps') {
+    // bash / zsh — одинарные кавычки снаружи, двойные внутри
+    cmd = `openclaw config set --strict-json channels.telegram.allowFrom '["tg:${id}"]'`;
+  } else if (state.os === 'windows') {
+    // PowerShell — экранирование через бэктик-кавычку
+    cmd = `openclaw config set --strict-json channels.telegram.allowFrom "[\\\`"tg:${id}\\\`"]"`;
+    // на самом деле в PS бэктик-кавычка ` + " — но в JS строке достаточно одной обратной
+    cmd = `openclaw config set --strict-json channels.telegram.allowFrom "[\`"tg:${id}\`"]"`;
+  }
+  out.textContent = cmd;
+  wrap.style.display = 'block';
 }
 async function testTgToken(id) {
   const v = (document.getElementById('tg-' + id).value || '').trim();
@@ -935,8 +1148,11 @@ function updateTgCounter() {
   if (!preset) return;
   let ok = 0;
   preset.agents.forEach(aid => { if ((state.tgTokens[aid] || {}).status === 'ok') ok++; });
-  document.getElementById('tg-counter').textContent = `проверено: ${ok} из ${preset.agents.length}`;
-  document.getElementById('btn-next-5').disabled = ok < preset.agents.length;
+  const hasUserId = /^\d{6,12}$/.test(state.tgUserId || '');
+  const tgPart = `проверено: ${ok} из ${preset.agents.length}`;
+  const idPart = hasUserId ? ' · user ID ✓' : ' · user ID ?';
+  document.getElementById('tg-counter').textContent = tgPart + idPart;
+  document.getElementById('btn-next-5').disabled = (ok < preset.agents.length) || !hasUserId;
 }
 
 function renderKnowledge() {
@@ -997,7 +1213,131 @@ function renderFinal() {
     <div class="summary-row" style="font-weight:700; border-top:1px solid var(--border-2); margin-top:4px; padding-top:8px;"><span class="summary-key">// итого</span><span class="summary-val" style="color: var(--accent);">${(preset ? preset.price : 0) + knowledgePrice} ₽</span></div>
   `;
   document.getElementById('dl-main-name').textContent = state.os === 'windows' ? 'setup.ps1' : 'setup.sh';
+  renderTroubleshoot();
 }
+
+// === Встроенный troubleshoot — топ-10 проблем из 6000 сообщений ===
+const TROUBLESHOOT_TOP10 = [
+  {
+    sev: 'red', tag: 'CRITICAL',
+    q: 'Боты молчат · Gateway not reachable (1006)',
+    cause: 'Gateway упал — порт 18789 никто не слушает. Чаще всего после обновления или ребута.',
+    fixes: [ 'openclaw gateway install', 'openclaw gateway start', 'openclaw gateway status --deep' ],
+    note: 'Если Service: not loaded → openclaw gateway restart. Если всё равно нет — openclaw doctor.'
+  },
+  {
+    sev: 'red', tag: 'CRITICAL',
+    q: 'Codex/OpenAI авторизовался, но боты молчат',
+    cause: 'Auth прошёл, но default-модель не применилась к агентам — у каждого модель отдельно.',
+    fixes: [
+      'openclaw config set "agents.list[1].model" \'"openai-codex/gpt-5.5"\' --strict-json',
+      '# (повторить для list[2]...list[7])',
+      'openclaw gateway restart'
+    ],
+    note: 'Если в боте установлен скилл model-switcher — выполнить одну команду: model-switcher --to openai-codex/gpt-5.5 --all-agents'
+  },
+  {
+    sev: 'red', tag: 'WINDOWS',
+    q: '«Оператор "<" зарезервирован для использования в будущем»',
+    cause: 'PowerShell не понимает синтаксис bash <(curl ...). Только setup.bat двойным кликом или WSL.',
+    fixes: [
+      'curl -fsSL https://.../install.sh -o install.sh',
+      'bash install.sh',
+      '# или: wsl bash -c "curl -fsSL .../install.sh | bash"'
+    ],
+    note: 'Лучше всего — двойной клик по setup.bat из bundle. Он сам делает Set-ExecutionPolicy Bypass.'
+  },
+  {
+    sev: 'red', tag: 'NODE',
+    q: 'npm error EACCES, permission denied /usr/local/lib/node_modules',
+    cause: 'Глобальный node без прав. Лечится переходом на nvm.',
+    fixes: [
+      'brew uninstall --ignore-dependencies node',
+      'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash',
+      'source ~/.zshrc && nvm install 22 && nvm use 22',
+      'npm install -g openclaw'
+    ],
+    note: 'Быстрый и неправильный способ: sudo npm install -g openclaw --unsafe-perm. Лучше nvm.'
+  },
+  {
+    sev: 'amber', tag: 'REGRESSION',
+    q: 'После обновления openclaw боты сломались',
+    cause: 'Регрессия в 2026.04.25 — массовое падение Gateway. Подтверждено в чате 20+ людей.',
+    fixes: [
+      'npm install -g openclaw@2026.4.24',
+      'openclaw gateway restart'
+    ],
+    note: 'setup-скрипт из bundle уже принудительно ставит 2026.4.24 — это для случая если апдейтили вручную.'
+  },
+  {
+    sev: 'red', tag: 'TELEGRAM',
+    q: 'Error: Failed to parse JSON value · allowFrom не записался',
+    cause: '--strict-json должен идти СРАЗУ после set, а tg:XXX внутри JSON-массива в кавычках. PowerShell дополнительно ест кавычки.',
+    fixes: [
+      "openclaw config set --strict-json channels.telegram.allowFrom '[\"tg:399453289\"]'   # macOS/Linux",
+      'openclaw config set --strict-json channels.telegram.allowFrom "[`"tg:399453289`"]"   # Windows PowerShell'
+    ],
+    note: 'На шаге 5 установщика для вашей ОС уже сгенерирована правильная команда.'
+  },
+  {
+    sev: 'amber', tag: 'API',
+    q: 'HTTP 401: AuthError: Invalid API key',
+    cause: 'Один из вариантов: ключ просрочен, или у разных агентов разные провайдеры и ключ только для одного.',
+    fixes: [
+      'openclaw models status --probe',
+      'openclaw config get agents.list --json | python3 -c "import sys,json; [print(a[\\"id\\"], \\"→\\", a.get(\\"model\\")) for a in json.load(sys.stdin)]"'
+    ],
+    note: 'Если у разных агентов разные провайдеры — выровнять через model-switcher или вручную (см. кейс 2).'
+  },
+  {
+    sev: 'amber', tag: 'API',
+    q: 'Missing API key for the selected provider on the gateway',
+    cause: 'Агент привязан к провайдеру, для которого нет авторизации.',
+    fixes: [
+      'openclaw models auth login --provider <имя>',
+      '# например: openclaw models auth login --provider openai',
+      'openclaw gateway restart'
+    ],
+    note: ''
+  },
+  {
+    sev: 'red', tag: 'VPS',
+    q: 'На VPS боты отвечают с компа, но не с телефона',
+    cause: 'Залипшая direct-сессия для конкретного устройства, либо разные TG-аккаунты в allowFrom.',
+    fixes: [
+      'cp ~/.openclaw/agents/tech/sessions/sessions.json ~/.openclaw/agents/tech/sessions/sessions.json.bak-$(date +%s)',
+      "python3 -c \"import json,os; p=os.path.expanduser('~/.openclaw/agents/tech/sessions/sessions.json'); d=json.load(open(p)); d.pop('agent:tech:telegram:direct:ВАШ_TG_ID', None); json.dump(d, open(p,'w'), indent=2)\"",
+      'openclaw gateway restart'
+    ],
+    note: 'Если поставлен скилл vps-mobile-fix — выполнить одну команду: vps-mobile-fix --user-id ВАШ_TG_ID'
+  },
+  {
+    sev: 'blue', tag: 'INFO',
+    q: 'Установка плагинов на VPS «зависла» на 5 минут',
+    cause: 'Это не зависание. Качаются npm-зависимости каждого плагина (acpx, runway, tts-local-cli) последовательно. На слабом VPS — до 5 минут.',
+    fixes: [ '# просто подождать 5 минут', '# если через 10 мин в одном месте — Ctrl+C и:', 'rm -rf /tmp/openclaw-install-*' ],
+    note: 'Чтобы не гадать — следить за прогрессом: openclaw logs --follow'
+  }
+];
+function renderTroubleshoot() {
+  const wrap = document.getElementById('troubleshoot-accordion');
+  if (!wrap) return;
+  wrap.innerHTML = TROUBLESHOOT_TOP10.map((t, i) => `
+    <div class="ts-item" id="ts-${i}">
+      <div class="ts-head" onclick="document.getElementById('ts-${i}').classList.toggle('open')">
+        <span class="ts-tag ${t.sev === 'red' ? '' : t.sev === 'amber' ? 'amber' : 'blue'}">${t.tag}</span>
+        <span style="flex:1;">${t.q}</span>
+        <span class="ts-arrow">▶</span>
+      </div>
+      <div class="ts-body">
+        <div class="ts-cause"><strong>Причина:</strong> ${t.cause}</div>
+        ${t.fixes.map(f => `<div class="ts-cmd"><code>${escapeHtml(f)}</code><button class="copy-btn" onclick="copyText(this, ${JSON.stringify(f)})">copy</button></div>`).join('')}
+        ${t.note ? `<div class="ts-cause" style="margin-top:10px;"><strong>Подсказка:</strong> ${t.note}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function runDryRun() {
   const out = document.getElementById('dry-run-output');
@@ -1138,7 +1478,11 @@ function generatePowerShellScript() {
   const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : Array.from(state.selectedKnowledge);
   const knowledge = MANIFEST.knowledge.filter(k => knowledgeIds.includes(k.id));
   return `# AIStack Installer v2 · ${preset ? preset.name : '?'}
+# При запуске вручную: powershell -ExecutionPolicy Bypass -File .\\setup.ps1
+# Или используйте setup.bat (двойной клик) — он сам разрешит запуск.
 $ErrorActionPreference = "Stop"
+# Самостоятельно снимаем блокировку только в этом процессе (безопасно)
+try { Set-ExecutionPolicy -Scope Process Bypass -Force -ErrorAction SilentlyContinue } catch {}
 function Say($t) { Write-Host "▸ $t" -ForegroundColor Cyan }
 function Ok($t)  { Write-Host "✓ $t" -ForegroundColor Green }
 function Wn($t)  { Write-Host "! $t" -ForegroundColor Yellow }
@@ -1233,6 +1577,16 @@ async function downloadBundle() {
   const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : Array.from(state.selectedKnowledge);
   const ext = state.os === 'windows' ? 'ps1' : 'sh';
   zip.file('setup.' + ext, state.os === 'windows' ? generatePowerShellScript() : generateBashScript());
+  if (state.os === 'windows') {
+    // .bat обёртка — двойной клик запустит setup.ps1 без ExecutionPolicy ошибки
+    zip.file('setup.bat',
+`@echo off
+REM AIStack · обёртка для запуска setup.ps1 на Windows без блокировки PowerShell
+cd /d "%~dp0"
+powershell -ExecutionPolicy Bypass -NoProfile -File "%~dp0setup.ps1"
+pause
+`);
+  }
   zip.file('aistack.env', generateEnvFile());
   zip.file('installation-path.md', generatePathMd());
 
@@ -1341,7 +1695,7 @@ if (state.step >= 1 && state.sessionStart) {
     startSessionTimer();
     document.getElementById('gate-status').textContent = 'authorized';
     document.getElementById('gate-status').className = 'term-status authorized';
-    if (state.os) { const el = document.querySelector(`#step-1 .option[data-value="${state.os}"]`); if (el) { el.classList.add('selected'); renderPreflight(); } }
+    if (state.os) { const el = document.querySelector(`#step-1 .option[data-value="${state.os}"]`); if (el) { el.classList.add('selected'); document.getElementById('btn-next-1').disabled = false; updateOsCommands(); } }
     if (state.hermes) { const el = document.querySelector(`#step-2 .option[data-value="${state.hermes}"]`); if (el) el.classList.add('selected'); if (state.step === 2) renderHermesPreflight(); updateHermesNextBtn(); }
     if (state.provider) { const el = document.querySelector(`#step-3 .option[data-value="${state.provider}"]`); if (el) el.classList.add('selected'); if (state.llmKey) document.getElementById('llm-key').value = state.llmKey; validateLlmKey(); }
   } else clearAndExit();
