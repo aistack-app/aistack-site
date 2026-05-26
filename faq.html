@@ -211,6 +211,34 @@
       </div>
 
       <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">Сколько весит установка?</div>
+        <div class="faq-answer">
+          <strong>Около 600 МБ.</strong> Из них ~185 МБ — Chromium для browser-tools, ~110 МБ — Chrome Headless, остальное Node.js / Python / системные библиотеки. На слабом интернете заложите <strong>30–60 минут</strong> только на загрузку.
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">Сколько времени занимает установка?</div>
+        <div class="faq-answer">
+          На современном компьютере с быстрым интернетом — <strong>15–25 минут</strong>. Около половины этого — активное нажатие в Hermes Setup Wizard (выбор провайдера, мессенджера и т.д.). Подробная инструкция по каждому экрану — в файле <code>WIZARD-GUIDE.md</code> внутри bundle.zip.
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">Нужны ли технические навыки?</div>
+        <div class="faq-answer">
+          Базовое знакомство с <strong>Terminal</strong> и умение получить <strong>API-ключ</strong> Anthropic / OpenAI. Если этого нет — рекомендуем тариф с сопровождением установки (см. цены).
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">Установщик «завис» — что делать?</div>
+        <div class="faq-answer">
+          Большинство долгих пауз — это <strong>закачка Chromium (185 МБ)</strong>. Если экран не двигается 5+ минут — нажмите <code>Enter</code>: возможно wizard ждёт подтверждения. Если совсем не помогает — <code>Ctrl+C</code>, перезапустите <code>setup.sh</code> заново (он продолжит с того места где остановился).
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="this.classList.toggle('open')">
         <div class="faq-question">Работает ли на Windows?</div>
         <div class="faq-answer">
           <strong>Да</strong>, через PowerShell + Node.js 22. Установщик автоматически проверит окружение и подскажет, чего не хватает. Если ваш компьютер часто тупит или у вас старое железо — рекомендуем поднять <strong>VPS за ~$5/мес</strong>: агенты будут работать в облаке 24/7, а вы — управлять с любого устройства.
