@@ -294,6 +294,35 @@
           <div style="color: var(--text); padding: 4px 0;">📁 Двойной клик → setup.bat</div>
           <div style="color: var(--text-3); margin-top: 8px; margin-bottom: 4px;"># Или через PowerShell (правая кнопка по setup.ps1 → Run with PowerShell):</div>
           powershell -ExecutionPolicy Bypass -File .\setup.ps1
+
+          <div style="color: var(--text-3); margin-top: 14px; margin-bottom: 6px; padding-top: 10px; border-top: 1px dashed var(--border);"># Альтернатива — ручной маршрут через npm (PowerShell от администратора):</div>
+          <div style="color: var(--text-3); margin-bottom: 2px;"># 1. Node.js 22 LTS — скачать с nodejs.org, перезапустить PowerShell. Проверить:</div>
+          <div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:6px;">
+            <code style="flex:1; color: var(--green);">node -v ; npm -v</code>
+            <button class="copy-btn" onclick="copyText(this, 'node -v\nnpm -v')">copy</button>
+          </div>
+          <div style="color: var(--text-3); margin-bottom: 2px;"># 2. Установить OpenClaw:</div>
+          <div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:6px;">
+            <code style="flex:1; color: var(--green);">npm install -g openclaw@latest</code>
+            <button class="copy-btn" onclick="copyText(this, 'npm install -g openclaw@latest')">copy</button>
+          </div>
+          <div style="color: var(--text-3); margin-bottom: 2px;"># Если ошибка «cannot be loaded» — используйте npm.cmd:</div>
+          <div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:6px;">
+            <code style="flex:1; color: var(--green);">npm.cmd install -g openclaw@latest</code>
+            <button class="copy-btn" onclick="copyText(this, 'npm.cmd install -g openclaw@latest')">copy</button>
+          </div>
+          <div style="color: var(--text-3); margin-bottom: 2px;"># 3. Настройка:</div>
+          <div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:6px;">
+            <code style="flex:1; color: var(--green);">openclaw configure ; openclaw gateway install ; openclaw gateway restart</code>
+            <button class="copy-btn" onclick="copyText(this, 'openclaw configure\nopenclaw gateway install\nopenclaw gateway restart')">copy</button>
+          </div>
+          <div style="color: var(--yellow); margin-top: 8px; font-size: 11.5px;">⚠ Если PowerShell блокирует скрипты — один раз выполните:</div>
+          <div style="display:flex; gap:8px; align-items:flex-start; margin-top:4px;">
+            <code style="flex:1; color: var(--green);">Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>
+            <button class="copy-btn" onclick="copyText(this, 'Set-ExecutionPolicy -Scope CurrentUser RemoteSigned')">copy</button>
+          </div>
+          <div style="color: var(--yellow); margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 11.5px;">⚠ Hermes на Windows работает через тот же npm-маршрут. Порт 7777 должен быть свободен.</div>
+          <div style="color: var(--text-3); margin-top: 4px; font-size: 11px;">Проверить: <code style="color:var(--green);">Get-NetTCPConnection -LocalPort 7777</code> — если что-то есть, убить через <code style="color:var(--green);">Stop-Process -Id &lt;PID&gt; -Force</code></div>
         </div>
 
         <!-- VPS -->
@@ -301,6 +330,9 @@
           <div style="color: var(--text-3); margin-bottom: 4px;"># Подключитесь к VPS по SSH, перенесите bundle (scp) и запустите:</div>
           cd ~/aistack-bundle<br>
           bash setup.sh
+          <div style="color: var(--text-3); margin-top: 8px; font-size: 11px; line-height: 1.5;">
+            Рекомендация: Ubuntu 22.04 LTS. Для 24/7 работы — сервер должен быть постоянно включён.
+          </div>
         </div>
 
         <div style="margin: 10px 0;">
@@ -314,6 +346,21 @@
             <li>✓ Подключит Telegram-ботов</li>
             <li>✓ Запустит Gateway → откроется http://localhost:18789</li>
           </ul>
+        </div>
+      </div>
+
+      <!-- Обновление агентов без потери памяти -->
+      <div class="info-box" style="background: rgba(109,255,175,0.06); border-color: rgba(109,255,175,0.25); margin-top: 14px;">
+        <strong style="color: var(--green);">🔄 Уже установлено? Обновить агентов без потери памяти</strong>
+        <div style="margin: 8px 0; color: var(--text-2); font-size: 12px;">
+          Если AIStack уже стоит и нужны только свежие шаблоны/скиллы/характер агентов — запустите команду ниже. <strong style="color: var(--text);">Ваши MEMORY.md и USER.md не трогаются</strong>, данные сохраняются.
+        </div>
+        <div style="background: #050605; border-radius: 6px; padding: 10px 12px; display:flex; gap:8px; align-items:flex-start;">
+          <code style="flex:1; word-break:break-all; color: var(--green); font-size: 12px;">openclaw agents refresh-templates</code>
+          <button class="copy-btn" onclick="copyText(this, 'openclaw agents refresh-templates')">copy</button>
+        </div>
+        <div style="margin-top: 8px; color: var(--text-3); font-size: 11px;">
+          Команда обновляет: workspace-templates, skills, IDENTITY.md, SOUL.md. Не трогает: MEMORY.md, USER.md, ваши проекты в <code>~/.openclaw/workspace-*/projects/</code>.
         </div>
       </div>
       <!-- OS-специфичные предупреждения (показываются автоматически по выбору ОС) -->
@@ -615,7 +662,23 @@
 
       <!-- Встроенный troubleshoot — топ-10 проблем из базы 6000 сообщений -->
       <div class="final-block">
-        <div class="final-block-title">🆘 если что-то пошло не так (10 типовых проблем)</div>
+        <div class="final-block-title">🆘 если что-то пошло не так</div>
+
+        <!-- DIAGNOSE-FIRST · сначала проверь это -->
+        <div class="warn-box" style="background: rgba(255,184,77,0.08); border-color: rgba(255,184,77,0.35); margin-bottom: 14px;">
+          <div class="warn-title" style="color: var(--yellow);">🩺 сначала проверь это (diagnose-first)</div>
+          <div style="margin-top: 6px; font-size: 12.5px; line-height: 1.8;">
+            <label style="display:block; cursor:pointer;"><input type="checkbox" style="margin-right:8px; accent-color: var(--accent);"> Какая у тебя ОС? <strong>(Mac / Windows / VPS)</strong></label>
+            <label style="display:block; cursor:pointer;"><input type="checkbox" style="margin-right:8px; accent-color: var(--accent);"> Какой провайдер модели? <strong>(minimax-free / Codex / Claude API)</strong></label>
+            <label style="display:block; cursor:pointer;"><input type="checkbox" style="margin-right:8px; accent-color: var(--accent);"> <span style="color: var(--red);">⚠ minimax-free = боты только болтают.</span> Для реальных задач нужна платная модель.</label>
+            <label style="display:block; cursor:pointer;"><input type="checkbox" style="margin-right:8px; accent-color: var(--accent);"> macOS 12+? Node.js 22.12+?</label>
+            <label style="display:block; cursor:pointer;"><input type="checkbox" style="margin-right:8px; accent-color: var(--accent);"> <code style="color: var(--green);">openclaw --version</code> работает?</label>
+          </div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,184,77,0.3); font-size: 11.5px; color: var(--text-3);">
+            Если все 5 пунктов отмечены, а боты всё равно молчат — открывайте кейсы ниже.
+          </div>
+        </div>
+
         <div class="info-box" style="margin-bottom: 12px;">
           База собрана из <strong>1772 жалоб клиентов</strong> в чате поддержки. Каждая решается одной командой ниже. Кликните на проблему — раскроется фикс.
         </div>
@@ -1216,7 +1279,7 @@ function renderFinal() {
   renderTroubleshoot();
 }
 
-// === Встроенный troubleshoot — топ-10 проблем из 6000 сообщений ===
+// === Встроенный troubleshoot — топ-13 проблем из 6000 сообщений (+ Windows-кейсы) ===
 const TROUBLESHOOT_TOP10 = [
   {
     sev: 'red', tag: 'CRITICAL',
@@ -1317,6 +1380,90 @@ const TROUBLESHOOT_TOP10 = [
     cause: 'Это не зависание. Качаются npm-зависимости каждого плагина (acpx, runway, tts-local-cli) последовательно. На слабом VPS — до 5 минут.',
     fixes: [ '# просто подождать 5 минут', '# если через 10 мин в одном месте — Ctrl+C и:', 'rm -rf /tmp/openclaw-install-*' ],
     note: 'Чтобы не гадать — следить за прогрессом: openclaw logs --follow'
+  },
+  {
+    sev: 'red', tag: 'WINDOWS',
+    q: 'npm : File cannot be loaded · ExecutionPolicy блокирует .ps1',
+    cause: 'PowerShell по умолчанию блокирует запуск любых .ps1, включая обёртку npm.ps1.',
+    fixes: [
+      'Set-ExecutionPolicy -Scope CurrentUser RemoteSigned',
+      '# или обходным путём — вызывать .cmd обёртку:',
+      'npm.cmd install -g openclaw@latest'
+    ],
+    note: 'PowerShell нужно запустить от администратора. Set-ExecutionPolicy с -Scope CurrentUser не требует прав, но безопаснее именно от админа.'
+  },
+  {
+    sev: 'red', tag: 'WINDOWS',
+    q: 'openclaw : command not found после успешной установки',
+    cause: 'npm положил бинарник в global prefix, но эта папка не попала в PATH текущей сессии PowerShell.',
+    fixes: [
+      '# 1. Самое простое — закрыть PowerShell и открыть заново',
+      '# 2. Если не помогло — добавить путь в PATH текущей сессии:',
+      '$env:PATH += ";" + (npm prefix -g) + "\\bin"',
+      '# 3. Проверить:',
+      'openclaw --version'
+    ],
+    note: 'Чтобы не делать руками каждый раз — перезагрузить машину или добавить (npm prefix -g)\\bin в системный PATH через «Параметры → Система → Переменные среды».'
+  },
+  {
+    sev: 'amber', tag: 'WINDOWS',
+    q: 'bash-команды (curl/install.sh) не работают в PowerShell',
+    cause: 'На Windows нет нативного bash. Синтаксис bash <(curl ...) даёт «Оператор < зарезервирован».',
+    fixes: [
+      '# Используйте npm-маршрут вместо bash:',
+      'npm install -g openclaw@latest',
+      'openclaw configure',
+      'openclaw gateway install ; openclaw gateway restart',
+      '# или WSL2, если он установлен:',
+      'wsl bash -c "curl -fsSL .../install.sh | bash"'
+    ],
+    note: 'В Windows-разделе шага 1 уже сгенерирован правильный PowerShell-маршрут — копируйте оттуда.'
+  },
+  {
+    sev: 'red', tag: 'HERMES',
+    q: 'Hermes DOWN · curl http://localhost:7777/health возвращает ошибку',
+    cause: 'Hermes не запущен или упал. Это компонент памяти — без него агенты теряют контекст между разговорами.',
+    fixes: [
+      '# Mac / Linux:',
+      'openclaw hermes restart',
+      '# или напрямую:',
+      'cd ~/.openclaw && ./hermes_memory restart',
+      '# Windows (PowerShell):',
+      'openclaw hermes restart',
+      '# Проверить после перезапуска:',
+      'curl -sf http://localhost:7777/health && echo " · hermes OK" || echo " · hermes DOWN"'
+    ],
+    note: 'Hermes — отдельный runtime на порту 7777, не часть OpenClaw. Windows: try { (iwr http://localhost:7777/health).StatusCode } catch { "DOWN" }'
+  },
+  {
+    sev: 'red', tag: 'HERMES',
+    q: 'Порт 7777 уже занят · ошибка "port 7777 already in use"',
+    cause: 'Другой процесс занял порт 7777 до старта Hermes.',
+    fixes: [
+      '# Mac / Linux — найти и убить процесс:',
+      'lsof -i :7777',
+      'kill -9 <PID>',
+      '# Windows PowerShell:',
+      'Get-NetTCPConnection -LocalPort 7777',
+      'Stop-Process -Id <PID> -Force'
+    ],
+    note: 'Замените <PID> на числовой ID процесса из вывода команды. После — перезапустить Hermes: openclaw hermes restart'
+  },
+  {
+    sev: 'amber', tag: 'HERMES',
+    q: 'Агенты забывают контекст несмотря на то что Hermes запущен',
+    cause: 'Hermes работает, но агенты не настроены на его использование. В AGENTS.md нет строки про память, либо memory.provider не выставлен.',
+    fixes: [
+      '# Проверить статус:',
+      'openclaw hermes status',
+      '# Синхронизировать память агентов с Hermes:',
+      'openclaw agents sync-memory',
+      '# Убедиться что провайдер памяти выставлен правильно:',
+      'openclaw config set memory.provider hermes',
+      'openclaw config set coordinator.runtime hermes',
+      'openclaw gateway restart'
+    ],
+    note: 'Если sync-memory недоступна — проверьте вручную, что в AGENTS.md каждого агента есть инструкция про использование памяти.'
   }
 ];
 function renderTroubleshoot() {
