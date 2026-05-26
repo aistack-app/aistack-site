@@ -388,10 +388,11 @@
     <div class="logo"><div class="logo-icon">A</div>AI<span>Stack</span></div>
     <nav class="nav-links">
       <a href="#products">Команды</a>
-      <a href="#addons">Доп.скиллы</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#cases">Кейсы</a>
       <a href="#how">Как работает</a>
-      <a href="#service">Под ключ</a>
-      <a href="#faq">FAQ</a>
+      <a href="model-switch.html">Модели</a>
+      <a href="faq.html">FAQ</a>
     </nav>
     <a class="btn btn-sm" href="#products">Открыть каталог →</a>
   </div>
@@ -729,6 +730,163 @@
 
     <div style="text-align: center; margin-top: 24px; color: var(--text-3); font-size: 13px;">
       💡 Нишевые сборки идут поверх любой базовой команды — установщик автоматически подключит нужные роли и скиллы.
+    </div>
+  </div>
+</section>
+
+<!-- PRICING · тарифы -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Тарифы</span>
+      <h2>Выбери пакет</h2>
+      <p>Три уровня — от первого агента до полной команды с голосовым управлением. Разовая оплата, без подписок.</p>
+    </div>
+
+    <div class="grid">
+
+      <!-- Тариф 1 — Старт -->
+      <div class="card">
+        <div class="card-tag-row">
+          <span class="card-tag">Старт</span>
+          <span class="card-tag">1 агент</span>
+        </div>
+        <div class="card-icon-row">
+          <div class="card-icon">🚀</div>
+          <div><div class="card-price">4 900 ₽</div></div>
+        </div>
+        <h3>Старт</h3>
+        <p class="card-desc">Один агент на выбор + базовый набор скиллов. Минимальная конфигурация, чтобы попробовать AIStack без переплат.</p>
+        <ul class="card-bullets">
+          <li>1 агент по выбору (Технарь / Маркетолог / Копирайтер)</li>
+          <li>Базовый набор скиллов (5 шт.)</li>
+          <li>Telegram-бот под твой номер</li>
+          <li>Воркбук установки</li>
+        </ul>
+        <ul style="list-style: none; padding: 0; font-size: 13px; margin-bottom: 20px;">
+          <li style="padding: 4px 0; color: var(--text-3); display: flex; gap: 8px;"><span style="color: var(--red); flex-shrink: 0;">✕</span> Команда из 5 агентов</li>
+          <li style="padding: 4px 0; color: var(--text-3); display: flex; gap: 8px;"><span style="color: var(--red); flex-shrink: 0;">✕</span> Embeddings-память</li>
+          <li style="padding: 4px 0; color: var(--text-3); display: flex; gap: 8px;"><span style="color: var(--red); flex-shrink: 0;">✕</span> VIP-агенты</li>
+        </ul>
+        <div class="card-bottom">
+          <div class="card-target">для теста и первого опыта</div>
+          <div class="card-cta">Выбрать →</div>
+        </div>
+      </div>
+
+      <!-- Тариф 2 — Команда (популярный) -->
+      <div class="card" style="border-color: var(--accent); background: linear-gradient(180deg, rgba(124,92,255,0.08), transparent);">
+        <div style="position: absolute; top: 14px; right: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); color: white; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.04em; text-transform: uppercase;">⭐ Популярный</div>
+        <div class="card-tag-row">
+          <span class="card-tag" style="background: var(--accent); color: white;">Команда</span>
+          <span class="card-tag">5 агентов</span>
+        </div>
+        <div class="card-icon-row">
+          <div class="card-icon">👥</div>
+          <div><div class="card-price">9 900 ₽</div></div>
+        </div>
+        <h3>Команда</h3>
+        <p class="card-desc">Полноценная AI-команда из 5 ролей с командной работой в Telegram-группе и умной памятью между сессиями.</p>
+        <ul class="card-bullets">
+          <li>5 агентов: Технарь + Маркетолог + Продюсер + Дизайнер + Координатор</li>
+          <li>39 скиллов в knowledge-пакете</li>
+          <li>Telegram-боты для каждого агента</li>
+          <li>Командная работа в Telegram-группе</li>
+          <li>Embeddings-память (умный поиск по смыслу)</li>
+          <li>Обновление без потери памяти</li>
+          <li>Полная troubleshoot-база</li>
+        </ul>
+        <div class="card-bottom">
+          <div class="card-target" style="color: var(--accent-light);">оптимальный выбор</div>
+          <div class="card-cta">Выбрать →</div>
+        </div>
+      </div>
+
+      <!-- Тариф 3 — VIP -->
+      <div class="card">
+        <div class="card-tag-row">
+          <span class="card-tag unique">VIP</span>
+          <span class="card-tag">6 агентов + voice</span>
+        </div>
+        <div class="card-icon-row">
+          <div class="card-icon" style="background: linear-gradient(135deg, var(--accent-light), var(--yellow));">👑</div>
+          <div><div class="card-price">19 900 ₽</div></div>
+        </div>
+        <h3>VIP</h3>
+        <p class="card-desc">Максимальная конфигурация: команда + копирайтер, голосовое управление, ручная настройка под ваш бизнес и приоритетная поддержка.</p>
+        <ul class="card-bullets">
+          <li>Всё из тарифа «Команда»</li>
+          <li>+ Копирайтер-агент (расширенная версия)</li>
+          <li>+ Голосовое управление (Voice Call plugin)</li>
+          <li>+ Ручная персональная настройка</li>
+          <li>+ Приоритетная поддержка</li>
+          <li>+ Обновления первым</li>
+        </ul>
+        <div class="card-bottom">
+          <div class="card-target">бизнес, который не хочет ждать</div>
+          <a class="card-cta" href="https://t.me/superwalletsru" target="_blank" style="cursor: pointer;">Обсудить → @superwalletsru</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CASES · уже работает -->
+<section id="cases">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Кейсы</span>
+      <h2>Уже работает</h2>
+      <p>Реальные сценарии — без громких цифр и натянутых обещаний. Просто как люди используют AIStack каждый день.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+
+      <div class="card" style="cursor: default;">
+        <div class="card-icon-row">
+          <div class="card-icon">💼</div>
+        </div>
+        <p style="font-size: 15px; line-height: 1.6; color: var(--text); margin-bottom: 16px; font-style: italic;">«Агент написал бизнес-план для привлечения инвестиций в строительство завода. Результат — 120 млн ₽ привлечённых инвестиций. Работа: 2 дня.»</p>
+        <div class="card-bottom" style="border-top: 1px solid var(--border); padding-top: 16px;">
+          <div class="card-target">бизнес-план · инвестиции</div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--green);">120 000 000 ₽</div>
+        </div>
+      </div>
+
+      <div class="card" style="cursor: default;">
+        <div class="card-icon-row">
+          <div class="card-icon">✍️</div>
+        </div>
+        <p style="font-size: 15px; line-height: 1.6; color: var(--text); margin-bottom: 16px; font-style: italic;">«Загрузила свой курс агенту и за час получила структуру нового продукта в своём стиле — раньше на это уходили недели.»</p>
+        <div class="card-bottom" style="border-top: 1px solid var(--border); padding-top: 16px;">
+          <div class="card-target">эксперт · упаковка продукта</div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--green);">недели → 1 час</div>
+        </div>
+      </div>
+
+      <div class="card" style="cursor: default;">
+        <div class="card-icon-row">
+          <div class="card-icon">📱</div>
+        </div>
+        <p style="font-size: 15px; line-height: 1.6; color: var(--text); margin-bottom: 16px; font-style: italic;">«Работаю в зале, задачи агентам ставлю через Telegram с телефона. Они работают дома на маке без меня.»</p>
+        <div class="card-bottom" style="border-top: 1px solid var(--border); padding-top: 16px;">
+          <div class="card-target">удалённое управление командой</div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--green);">24/7 в фоне</div>
+        </div>
+      </div>
+
+      <div class="card" style="cursor: default;">
+        <div class="card-icon-row">
+          <div class="card-icon">🏢</div>
+        </div>
+        <p style="font-size: 15px; line-height: 1.6; color: var(--text); margin-bottom: 16px; font-style: italic;">«Директор по маркетингу EdTech. Агенты закрыли автоматизацию и ускорили производство контента. Теперь сам настраиваю системы другим бизнесам.»</p>
+        <div class="card-bottom" style="border-top: 1px solid var(--border); padding-top: 16px;">
+          <div class="card-target">EdTech · автоматизация · контент</div>
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--green);">новое направление</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
