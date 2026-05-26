@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Смена мозгов агентов · AIStack — свободный выбор AI-модели</title>
+<meta name="description" content="Агенты AIStack работают на любой модели — GPT-5, Claude Opus, OpenRouter. Свобода выбора провайдера в одну команду.">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg-2: #11111a;
+    --bg-3: #1a1a26;
+    --border: #2a2a3a;
+    --border-2: #3a3a4a;
+    --text: #e8e8ef;
+    --text-2: #9090a8;
+    --text-3: #5a5a72;
+    --accent: #7c5cff;
+    --accent-2: #5b3df0;
+    --accent-light: #c97aff;
+    --green: #3ddc97;
+    --yellow: #ffb84d;
+    --red: #ff5577;
+    --radius: 14px;
+    --mono: 'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-light); text-decoration: none; }
+  a:hover { color: var(--text); }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .container-narrow { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,15,0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px; max-width: 1200px; margin: 0 auto;
+  }
+  .logo { font-weight: 700; font-size: 18px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+  .logo span { color: var(--accent); }
+  .logo-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px;
+  }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { color: var(--text-2); font-size: 14px; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--text); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 10px;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    background: var(--accent); color: white;
+    border: none; cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+  .btn:hover { background: var(--accent-2); color: white; }
+  .btn-sm { padding: 8px 14px; font-size: 13px; }
+  .btn-lg { padding: 14px 26px; font-size: 15px; }
+  .btn-outline { background: transparent; border: 1px solid var(--border-2); color: var(--text); }
+  .btn-outline:hover { background: var(--bg-3); border-color: var(--accent); }
+
+  .page-hero { padding: 80px 0 50px; position: relative; overflow: hidden; text-align: center; }
+  .page-hero::before {
+    content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,92,255,0.14) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(124,92,255,0.12); color: var(--accent-light);
+    font-size: 13px; font-weight: 500; margin-bottom: 26px;
+    border: 1px solid rgba(124,92,255,0.25);
+    position: relative;
+  }
+  h1 {
+    font-size: 54px; line-height: 1.05; letter-spacing: -0.03em;
+    font-weight: 800; max-width: 880px; margin: 0 auto 22px;
+    position: relative;
+  }
+  h1 .gradient {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .page-hero p.subtitle {
+    font-size: 19px; color: var(--text-2); max-width: 640px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  section { padding: 50px 0; }
+  .section-head { text-align: center; margin-bottom: 40px; }
+  .section-head .eyebrow {
+    display: inline-block; font-size: 12px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .section-head h2 {
+    font-size: 34px; letter-spacing: -0.02em; font-weight: 700;
+    margin-bottom: 12px; line-height: 1.15;
+  }
+  .section-head p { color: var(--text-2); font-size: 16px; max-width: 600px; margin: 0 auto; }
+
+  /* Models table */
+  .model-table {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .model-row {
+    display: grid; grid-template-columns: 1.4fr 1fr 2fr;
+    gap: 16px; padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .model-row:last-child { border-bottom: none; }
+  .model-row.header {
+    background: var(--bg-3);
+    font-size: 12px; color: var(--text-2);
+    text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+  }
+  .model-name { display: flex; align-items: center; gap: 10px; }
+  .model-name code {
+    font-family: var(--mono); font-size: 13px;
+    color: var(--text); font-weight: 600;
+  }
+  .model-badge {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 5px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .model-badge.free { background: rgba(61,220,151,0.15); color: var(--green); }
+  .model-badge.pro { background: rgba(124,92,255,0.15); color: var(--accent-light); }
+  .model-badge.top { background: rgba(255,184,77,0.15); color: var(--yellow); }
+  .model-price {
+    font-family: var(--mono); font-size: 14px; color: var(--text);
+    font-weight: 600;
+  }
+  .model-use { font-size: 14px; color: var(--text-2); }
+
+  /* Command block */
+  .command-block {
+    background: #0a0c0a;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    max-width: 720px; margin: 0 auto;
+  }
+  .command-header {
+    background: var(--bg-3); padding: 10px 14px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; color: var(--text-2);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+  }
+  .command-dots { display: flex; gap: 6px; }
+  .command-dots div {
+    width: 11px; height: 11px; border-radius: 50%;
+  }
+  .command-dots div:nth-child(1) { background: #ff5f56; }
+  .command-dots div:nth-child(2) { background: #ffbd2e; }
+  .command-dots div:nth-child(3) { background: #27c93f; }
+  .command-body {
+    padding: 24px 28px;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .command-body .prompt { color: var(--green); }
+  .command-body .cmd { color: var(--text); }
+  .command-body .comment { color: var(--text-3); margin-top: 6px; font-size: 12px; }
+
+  /* Warning block */
+  .warn-block {
+    background: linear-gradient(135deg, rgba(255,184,77,0.08), rgba(255,184,77,0.02));
+    border: 1px solid rgba(255,184,77,0.3);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    max-width: 720px; margin: 0 auto;
+  }
+  .warn-icon {
+    font-size: 24px; flex-shrink: 0; line-height: 1;
+  }
+  .warn-body {
+    font-size: 14.5px; color: var(--text); line-height: 1.6;
+  }
+  .warn-body strong { color: var(--yellow); }
+
+  /* Pros block */
+  .pros-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .pro-card {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 24px;
+  }
+  .pro-card .icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: rgba(124,92,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 14px;
+  }
+  .pro-card h4 { font-size: 16px; margin-bottom: 6px; }
+  .pro-card p { font-size: 13.5px; color: var(--text-2); line-height: 1.55; }
+
+  .cta-block {
+    text-align: center; padding: 70px 0;
+    background: linear-gradient(180deg, transparent, rgba(124,92,255,0.06));
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .cta-block h2 { font-size: 32px; max-width: 600px; margin: 0 auto 14px; letter-spacing: -0.02em; }
+  .cta-block p { color: var(--text-2); margin-bottom: 28px; }
+
+  footer { padding: 50px 0 30px; border-top: 1px solid var(--border); }
+  .footer-grid {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 32px;
+    margin-bottom: 32px;
+  }
+  .footer-col h5 { font-size: 13px; margin-bottom: 14px; color: var(--text); }
+  .footer-col a { display: block; color: var(--text-2); font-size: 13px; margin-bottom: 8px; }
+  .footer-col p { font-size: 13px; color: var(--text-2); max-width: 280px; }
+  .footer-bottom {
+    padding-top: 24px; border-top: 1px solid var(--border);
+    color: var(--text-3); font-size: 12px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+
+  @media (max-width: 1000px) {
+    h1 { font-size: 40px; }
+    .pros-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    h1 { font-size: 30px; }
+    .nav-links { display: none; }
+    .pros-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .model-row { grid-template-columns: 1fr; gap: 8px; }
+    .model-row.header { display: none; }
+    .page-hero { padding: 50px 0 30px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="index.html" class="logo" style="text-decoration: none; color: var(--text);"><div class="logo-icon">A</div>AI<span>Stack</span></a>
+    <nav class="nav-links">
+      <a href="index.html#products">Команды</a>
+      <a href="index.html#pricing">Тарифы</a>
+      <a href="index.html#cases">Кейсы</a>
+      <a href="model-switch.html" class="active">Модели</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
+    <a class="btn btn-sm" href="index.html#products">Открыть каталог →</a>
+  </div>
+</header>
+
+<main>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="badge">⚡ Смена мозгов агентов</div>
+    <h1>Свободный выбор <span class="gradient">модели</span>.<br>Хоть GPT-5, хоть Claude.</h1>
+    <p class="subtitle">Агенты работают на любой AI-модели через OpenClaw. Вы не заперты ни в одном провайдере — переключайтесь одной командой.</p>
+  </div>
+</section>
+
+<!-- Преимущества -->
+<section>
+  <div class="container">
+    <div class="pros-grid">
+      <div class="pro-card">
+        <div class="icon">🔀</div>
+        <h4>Любой провайдер</h4>
+        <p>OpenAI, Anthropic, OpenRouter — выбираете под задачу и бюджет.</p>
+      </div>
+      <div class="pro-card">
+        <div class="icon">💰</div>
+        <h4>Цена под кошелёк</h4>
+        <p>От $20/мес Codex до топового Claude Opus. Платите только за то, что реально нужно.</p>
+      </div>
+      <div class="pro-card">
+        <div class="icon">🔌</div>
+        <h4>Один command — смена</h4>
+        <p>Переключение модели не ломает память, не сбрасывает настройки, не требует переустановки.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Таблица моделей -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Сравнение моделей</span>
+      <h2>Какой «мозг» выбрать</h2>
+      <p>Три рабочих варианта + тест-запуск для первой проверки. Рекомендуемый старт — Codex или Claude API.</p>
+    </div>
+
+    <div class="model-table">
+      <div class="model-row header">
+        <div>Модель</div>
+        <div>Цена</div>
+        <div>Подходит для</div>
+      </div>
+
+      <div class="model-row" style="opacity: 0.55;">
+        <div class="model-name">
+          <code>minimax-free</code>
+          <span class="model-badge" style="background:rgba(90,90,90,0.3); color:#888; border-color:#555;">Тест</span>
+        </div>
+        <div class="model-price" style="color:#666;">Бесплатно</div>
+        <div class="model-use" style="color:#666;">Только для первой проверки — убедиться что бот вообще работает. Для задач не подходит: жёсткие лимиты, нет аналитики и кода.</div>
+      </div>
+
+      <div class="model-row">
+        <div class="model-name">
+          <code>openai-codex / gpt-5.4</code>
+          <span class="model-badge pro">Pro</span>
+        </div>
+        <div class="model-price">~$20/мес</div>
+        <div class="model-use">Рабочие задачи, код, автоматизации, генерация контента. Оптимальный баланс цены и качества.</div>
+      </div>
+
+      <div class="model-row">
+        <div class="model-name">
+          <code>claude-opus-4-7</code>
+          <span class="model-badge top">Top</span>
+        </div>
+        <div class="model-price">~$30–50/мес</div>
+        <div class="model-use">Сложная аналитика, длинные тексты, стратегия, аватары клиентов. Лучшая модель для глубокой работы.</div>
+      </div>
+
+      <div class="model-row">
+        <div class="model-name">
+          <code>openrouter (любая)</code>
+          <span class="model-badge pro">Flex</span>
+        </div>
+        <div class="model-price">По факту</div>
+        <div class="model-use">Свобода выбора — Gemini, Mistral, Llama, любая модель через единый шлюз. Платите за токены.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Команда смены -->
+<section>
+  <div class="container-narrow">
+    <div class="section-head">
+      <span class="eyebrow">Как переключить</span>
+      <h2>Одна команда в терминале</h2>
+      <p>Запустите конфигуратор OpenClaw — выберите модель из списка — и все агенты автоматически перейдут на новый «мозг».</p>
+    </div>
+
+    <div class="command-block">
+      <div class="command-header">
+        <div class="command-dots"><div></div><div></div><div></div></div>
+        <div style="flex: 1; text-align: center;">terminal · openclaw config</div>
+        <div style="color: var(--green);">● ready</div>
+      </div>
+      <div class="command-body">
+        <div><span class="prompt">$</span> <span class="cmd">openclaw configure --section model</span></div>
+        <div class="comment">// откроется меню выбора модели · текущая подсветится зелёным</div>
+      </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 20px; color: var(--text-3); font-size: 13px;">Память агентов, USER.md, troubleshoot-база — всё сохраняется при смене модели.</p>
+  </div>
+</section>
+
+<!-- Warning -->
+<section>
+  <div class="container-narrow">
+    <div class="warn-block">
+      <div class="warn-icon">⚠️</div>
+      <div class="warn-body">
+        minimax-free — только для первого теста, чтобы убедиться что установка прошла и бот отвечает. <strong>Для любой реальной работы</strong> (бизнес-планы, аналитика, контент, автоматизации) сразу ставьте рабочую модель — <strong>openai-codex</strong> или <strong>claude-opus</strong>.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-block">
+  <div class="container">
+    <h2>Готовы попробовать?</h2>
+    <p>Начните с бесплатной модели — переключитесь на платную, когда поймёте формат.</p>
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a class="btn btn-lg" href="index.html#pricing">Выбрать тариф →</a>
+      <a class="btn btn-lg btn-outline" href="faq.html">Все вопросы</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="logo" style="margin-bottom: 12px;"><div class="logo-icon">A</div>AI<span>Stack</span></div>
+        <p>Готовые AI-сборки для услугового бизнеса и экспертов. Не курс. Не подписка. Купил один раз — пользуешься.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Каталог</h5>
+        <a href="index.html#products">Команды</a>
+        <a href="index.html#pricing">Тарифы</a>
+        <a href="index.html#cases">Кейсы</a>
+        <a href="model-switch.html">Смена моделей</a>
+      </div>
+      <div class="footer-col">
+        <h5>Клиентам</h5>
+        <a href="index.html#service">Услуги настройки</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://t.me/superwalletsru" target="_blank">Поддержка @superwalletsru</a>
+      </div>
+      <div class="footer-col">
+        <h5>Документы</h5>
+        <a href="#">Оферта</a>
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Условия возврата</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 AIStack. Все права защищены.</div>
+      <div>ИП Болдырева Е. А. · 14 дней на возврат</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
