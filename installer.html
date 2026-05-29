@@ -137,6 +137,8 @@
   .copy-btn { background: var(--bg-3); color: var(--text); border: 1px solid var(--border-2); padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; font-family: var(--mono); flex-shrink: 0; }
   .copy-btn:hover { background: var(--accent); border-color: var(--accent); }
   .copy-btn.copied { background: var(--green-dim); border-color: var(--green-dim); color: white; }
+  .cmd-inline { display: inline-block; background: #050605; color: var(--green); padding: 2px 8px; border-radius: 4px; font-family: var(--mono); font-size: 12px; margin: 0 4px; }
+  .copy-btn.copy-inline { padding: 2px 8px; font-size: 11px; margin-left: 2px; vertical-align: middle; }
   .final-block { margin-bottom: 20px; }
   .final-block-title { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
   .download-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -211,7 +213,7 @@
     <div class="progress" id="progress" style="display:none;">
       <div class="progress-row">
         <span id="progress-name">// маршрут установки</span>
-        <span id="progress-label">шаг 1 из 7</span>
+        <span id="progress-label">шаг 1 из 6</span>
       </div>
       <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
@@ -224,12 +226,12 @@
       <p class="desc">Персональный установщик AI-команды. Поднимает OpenClaw, Hermes как Агент.exe, раскатывает workspace для всех агентов вашего пресета.</p>
       <div class="warn-box">
         <div class="warn-title">⚠ внимание</div>
-        Пароль выдаётся вместе с тарифом и привязывается к вашему Telegram. Передача = бан. Все ключи остаются у вас в браузере.
+        Ключ доступа выдаётся вместе с тарифом, имеет формат <code>AIS-TARIFF-PRESET-RANDOM</code> и привязывается к вашему Telegram. Передача = бан. Все секреты остаются у вас в браузере.
       </div>
       <div class="input-group">
-        <label class="input-label">Пароль доступа <span class="req">*</span></label>
+        <label class="input-label">Ключ доступа <span class="req">*</span></label>
         <div class="input-wrap">
-          <input type="password" class="input has-eye" id="pwd-input" placeholder="OPCLAW-XXXX-XXXX-XXXX" autocomplete="off">
+          <input type="password" class="input has-eye" id="pwd-input" placeholder="AIS-MINI-CONTENT-XXXXXX" autocomplete="off">
           <button class="eye-btn" onclick="toggleEye('pwd-input', this)">показать</button>
         </div>
       </div>
@@ -437,7 +439,7 @@
 
       <div class="actions">
         <button class="btn btn-ghost" onclick="goBack()">← назад</button>
-        <span class="comment" style="margin:0;">шаг 2 из 7</span>
+        <span class="comment" style="margin:0;">шаг 2 из 6</span>
         <button class="btn" id="btn-next-2" onclick="goNext()" disabled>далее →</button>
       </div>
     </div>
@@ -446,30 +448,12 @@
     <div class="step" id="step-3">
       <p class="prompt">./set_llm_provider</p>
       <h2>Шаг 3 · Нейросеть («мозг» команды)</h2>
-      <p class="desc">Два пути: <strong>подписка через CLI</strong> (фикс-цена, без сюрпризов) или <strong>API-ключ</strong> (плата по факту).</p>
+      <p class="desc">Для установки нужен <strong>API-ключ</strong> любого провайдера с балансом $5+.</p>
 
       <div class="info-box" style="margin-bottom: 20px;">
-        <strong>💡 Что выбрать:</strong> для полной AI-команды реально работает только <strong>Claude Max за $100-200/мес</strong> — у Pro за $20 быстро кончаются Agent SDK credits и агенты отваливаются. Если бюджет ограничен — берите API-ключ Anthropic с депозитом $20+ или ProxyAPI для РФ.
+        <strong>💡 Что выбрать:</strong> для самой установки достаточно API-ключа с балансом $5+ — этого хватит чтобы пройти установку и проверить что система работает.<br><br>
+        После установки рекомендуем переключиться на подписку для постоянной работы — самые надёжные варианты: <strong>Claude Max ($100-200/мес)</strong> или <strong>ChatGPT Pro + Codex CLI ($100/мес)</strong>. Подробности — в учебнике пользователя.
       </div>
-
-      <h3 style="font-size:13px; color: var(--text-2); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.06em;">📦 Через подписку CLI</h3>
-      <div class="options-grid cols-2" style="margin-bottom: 6px;">
-        <div class="option" data-value="claude-cli" onclick="pickSingle(this, 'provider'); validateLlmKey();">
-          <div class="option-check"></div>
-          <div class="option-content">
-            <div class="option-name">Claude Code · Max <span class="badge">REC</span></div>
-            <div class="option-desc">$100/мес (Max 5X) или $200/мес (Max) · полные Agent SDK credits для команды агентов · работает стабильно</div>
-          </div>
-        </div>
-        <div class="option" data-value="codex-cli" onclick="pickSingle(this, 'provider'); validateLlmKey();">
-          <div class="option-check"></div>
-          <div class="option-content">
-            <div class="option-name">OpenAI Codex CLI</div>
-            <div class="option-desc">$100/мес ChatGPT Pro · 5× больше Codex-запросов · альтернатива Claude Max</div>
-          </div>
-        </div>
-      </div>
-      <p class="comment" style="margin-bottom: 20px;">// Claude Pro за $20/мес тоже работает, но Agent SDK лимит всего $20 в credits — на команду из 5+ агентов хватит на 1-2 дня. На API ключе того же Anthropic — без таких лимитов, но платите по факту использования.</p>
 
       <h3 style="font-size:13px; color: var(--text-2); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.06em;">🔑 Через API-ключ</h3>
       <div class="options-grid cols-3" style="margin-bottom: 16px;">
@@ -552,16 +536,16 @@
 
       <div class="actions">
         <button class="btn btn-ghost" onclick="goBack()">← назад</button>
-        <span class="comment" style="margin:0;">шаг 3 из 7</span>
+        <span class="comment" style="margin:0;">шаг 3 из 6</span>
         <button class="btn" id="btn-next-3" onclick="goNext()" disabled>далее →</button>
       </div>
     </div>
 
     <!-- STEP 4: PRESET -->
     <div class="step" id="step-4">
-      <p class="prompt">./select_team_preset</p>
-      <h2>Шаг 4 · Команда</h2>
-      <p class="desc">Один пресет = набор агентов под задачу.</p>
+      <p class="prompt">./load_team_preset</p>
+      <h2>Шаг 4 · Ваша сборка</h2>
+      <p class="desc">Сборка определяется тарифом из ключа — менять её здесь не нужно.</p>
       <div id="presets-list" style="display: grid; gap: 12px;"></div>
       <div class="actions">
         <button class="btn btn-ghost" onclick="goBack()">← назад</button>
@@ -605,20 +589,8 @@
     </div>
 
     <!-- STEP 6: KNOWLEDGE -->
+    <!-- STEP 6: FINAL (бывший Шаг 7, после удаления Knowledge) -->
     <div class="step" id="step-6">
-      <p class="prompt">./pick_knowledge_addons</p>
-      <h2>Шаг 6 · Доп.knowledge (опционально)</h2>
-      <p class="desc">AIStack Originals — авторские методики, по 999 ₽. Можно пропустить.</p>
-      <div id="knowledge-list"></div>
-      <div class="actions">
-        <button class="btn btn-ghost" onclick="goBack()">← назад</button>
-        <span id="knowledge-counter" class="comment" style="margin:0;">выбрано: 0 на сумму 0 ₽</span>
-        <button class="btn" onclick="goNext()">далее →</button>
-      </div>
-    </div>
-
-    <!-- STEP 7: FINAL -->
-    <div class="step" id="step-7">
       <p class="prompt">./generate_personal_installer ✓</p>
       <h2>Готово · Ваш персональный установщик</h2>
       <div class="summary" id="summary"></div>
@@ -628,34 +600,35 @@
         <div class="dry-run-output" id="dry-run-output" style="display:none;"></div>
       </div>
       <div class="final-block">
-        <div class="final-block-title">↓ скачать персональные файлы</div>
-        <div class="download-row">
-          <a class="dl-card" onclick="downloadFile('script')">
-            <div class="dl-icon">▼</div>
-            <div class="dl-text"><strong id="dl-main-name">setup.sh</strong><span>главный скрипт</span></div>
+        <div class="final-block-title">↓ скачать установщик</div>
+        <div class="download-row" style="display:grid;grid-template-columns:1fr;">
+          <a class="dl-card" onclick="downloadFile('all')" style="padding:22px 18px;">
+            <div class="dl-icon" style="width:54px;height:54px;font-size:26px;">📦</div>
+            <div class="dl-text">
+              <strong style="font-size:15px;">aistack-bundle.zip</strong>
+              <span style="font-size:12px;">setup-скрипт · workspace-шаблоны · skills · knowledge · WIZARD-GUIDE · troubleshoot</span>
+            </div>
           </a>
-          <a class="dl-card" onclick="downloadFile('env')">
-            <div class="dl-icon">⚙</div>
-            <div class="dl-text"><strong>aistack.env</strong><span>только переменные</span></div>
-          </a>
-          <a class="dl-card" onclick="downloadFile('path')">
-            <div class="dl-icon">📋</div>
-            <div class="dl-text"><strong>installation-path.md</strong><span>пошаговая инструкция</span></div>
-          </a>
-          <a class="dl-card" onclick="downloadFile('all')">
-            <div class="dl-icon">📦</div>
-            <div class="dl-text"><strong>aistack-bundle.zip</strong><span>setup + templates + skills + knowledge</span></div>
-          </a>
+        </div>
+        <div style="margin-top:8px;font-size:11.5px;color:var(--text-3);">
+          Всё в одном архиве. Распакуйте — запустите <code>bash setup.sh</code> (Mac/Linux) или двойной клик по <code>setup.bat</code> (Windows).
         </div>
       </div>
       <div class="info-box">
         <strong>Что дальше:</strong>
         <ol style="margin-left: 18px; margin-top: 6px;">
           <li>Скачайте bundle.zip и распакуйте в любую папку</li>
-          <li><strong>На macOS/Linux:</strong> терминал → <code>cd ~/Downloads/aistack-bundle</code> → <code>bash setup.sh</code></li>
-          <li><strong>На Windows:</strong> <strong>двойной клик по setup.bat</strong> (он сам разрешит запуск .ps1 без проблем с ExecutionPolicy)</li>
+          <li><strong>На macOS/Linux:</strong> терминал →
+            <code class="cmd-inline">cd ~/Downloads/aistack-bundle &amp;&amp; bash setup.sh</code>
+            <button class="copy-btn copy-inline" onclick="copyText(this, 'cd ~/Downloads/aistack-bundle && bash setup.sh')">copy</button>
+          </li>
+          <li><strong>На Windows:</strong> <strong>двойной клик по <code>setup.bat</code></strong> (он сам разрешит запуск .ps1 без проблем с ExecutionPolicy)</li>
           <li>Скрипт создаст workspace, поставит global_skills, скопирует knowledge</li>
-          <li>Откройте localhost:18789 или напишите Агент.exe в Telegram «привет»</li>
+          <li>Откройте
+            <code class="cmd-inline">http://localhost:18789</code>
+            <button class="copy-btn copy-inline" onclick="copyText(this, 'http://localhost:18789')">copy</button>
+            или напишите Агент.exe в Telegram «привет»
+          </li>
           <li>Агент.exe сам задаст 5 вопросов и заполнит USER.md</li>
         </ol>
       </div>
@@ -680,7 +653,7 @@
         </div>
 
         <div class="info-box" style="margin-bottom: 12px;">
-          База собрана из <strong>1772 жалоб клиентов</strong> в чате поддержки. Каждая решается одной командой ниже. Кликните на проблему — раскроется фикс.
+          Типовые проблемы и проверенные решения. Каждая решается одной командой ниже. Кликните на проблему — раскроется фикс.
         </div>
         <div id="troubleshoot-accordion"></div>
         <div style="margin-top: 14px; padding: 14px; background: rgba(124,92,255,0.06); border: 1px dashed rgba(124,92,255,0.3); border-radius: 8px; font-size: 12.5px; color: var(--text);">
@@ -700,9 +673,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
-const ACCESS_HASH = '5f4f60a87c4458d6583ae49674772fefcdc5868d7cefae178ddba8dfe58b95d5';
-const WHITELIST_USERNAMES = ['ivanboldyrev1', 'kateboldyref', 'kostyavkoste'];
 const SESSION_TTL_MIN = 45;
+
+// ===========================================================================
+// ACCESS KEYS — формат AIS-<TARIFF>-<PRESET>-<RANDOM>
+// ===========================================================================
+// TARIFF ∈ {MINI, START, PROFI, TEAM, PERSONAL}
+// PRESET ∈ {CONTENT, SALES, EXPERT, BUSINESS, SCHOOL, TECH, FULL}
+// PROFI/TEAM/PERSONAL → всегда FULL
+// MINI/START → одна из 6 базовых сборок
+// ⚠️ ВАЖНО: удалить DEV_KEY перед продакшеном (раздаётся пиратам в чистом виде)
+const DEV_KEY = 'AIS-TEAM-FULL-DEV1234'; // TODO: убрать в проде
 
 // ===========================================================================
 // GITHUB REPO — URL уже прописан · вставьте свой токен в кавычки
@@ -746,6 +727,88 @@ const WIZARD_GUIDE_CONTENT = `# Пошаговая инструкция по Her
 - Wizard завис → нажмите Enter ещё раз.
 - Ctrl+C не выходит → откройте новый Terminal, выполните \`docker kill <container_name>\` (для Docker) или \`pkill -f hermes\` (на сервере).
 - После завершения wizard'а скрипт продолжит автоматически.
+`;
+
+// === Краткий troubleshoot для bundle (топ-8 кейсов) ===
+// Полная база (25+ кейсов) лежит на сайте — troubleshoot.md. Здесь — самое частое.
+const TROUBLESHOOT_CONTENT = `# AIStack · Быстрый troubleshoot (топ-8 проблем)
+
+Это сокращённая база — самые частые проблемы и проверенные решения.
+Полная версия (25+ кейсов) — на сайте: https://<АДРЕС-САЙТА>/troubleshoot.md
+
+Совет: можно скормить этот файл любой нейронке —
+«вот база решений, у меня проблема X, что делать».
+
+---
+
+## 1. Боты молчат · Gateway not reachable (1006)
+Причина: Gateway упал — порт 18789 никто не слушает (часто после обновления или ребута).
+Решение:
+    openclaw gateway install
+    openclaw gateway start
+    openclaw gateway status --deep
+Если Service: not loaded → openclaw gateway restart. Если не помогло — openclaw doctor.
+
+## 2. Hermes DOWN · health на порту 7777 возвращает ошибку
+Причина: Hermes (память команды) не запущен или упал. Без него агенты теряют контекст.
+Решение (Mac / Linux / Windows):
+    openclaw hermes restart
+Проверить после перезапуска:
+    curl -sf http://localhost:7777/health && echo " hermes OK" || echo " hermes DOWN"
+Hermes — отдельный runtime на порту 7777, не часть OpenClaw.
+
+## 3. Порт 7777 уже занят · "port 7777 already in use"
+Причина: другой процесс занял порт 7777 до старта Hermes.
+Решение (Mac / Linux):
+    lsof -i :7777
+    kill -9 <PID>
+Решение (Windows PowerShell):
+    Get-NetTCPConnection -LocalPort 7777
+    Stop-Process -Id <PID> -Force
+Замените <PID> на числовой ID процесса из вывода. После — openclaw hermes restart.
+
+## 4. Node не найден / npm error EACCES (permission denied)
+Причина: глобальный node без прав. Лечится переходом на nvm. Нужен Node.js 22.12+.
+Решение (Mac / Linux):
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    source ~/.zshrc && nvm install 22 && nvm use 22
+    npm install -g openclaw
+
+## 5. Windows: «npm : File cannot be loaded» — ExecutionPolicy блокирует .ps1
+Причина: PowerShell по умолчанию блокирует запуск .ps1, включая обёртку npm.ps1.
+Решение:
+    Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+Или обходным путём — вызвать .cmd обёртку:
+    npm.cmd install -g openclaw@latest
+Проще всего: двойной клик по setup.bat из bundle — он сам ставит ExecutionPolicy Bypass.
+
+## 6. Bot не отвечает после установки (Codex/OpenAI авторизован, но молчит)
+Причина: default-модель не применилась к агентам — у каждого агента модель отдельно.
+Решение (если стоит скилл model-switcher):
+    model-switcher --to <провайдер/модель> --all-agents
+Иначе вручную для каждого агента (list[1]..list[7]):
+    openclaw config set "agents.list[1].model" '"openai-codex/gpt-5.5"' --strict-json
+    openclaw gateway restart
+
+## 7. Установка «зависла» на Chromium / плагинах (до 5 минут)
+Причина: это не зависание. Качаются npm-зависимости плагинов последовательно.
+На слабой машине или VPS — до 5 минут. Это нормально.
+Решение: подождать. Следить за прогрессом:
+    openclaw logs --follow
+Если через 10 минут застряло в одном месте — Ctrl+C и:
+    rm -rf /tmp/openclaw-install-*
+
+## 8. После обновления openclaw боты сломались
+Причина: регрессия в версии 2026.04.25 (массовое падение Gateway). Устранено в 2026.4.24.
+Решение:
+    npm install -g openclaw@2026.4.24
+    openclaw gateway restart
+
+---
+
+Не нашли свою проблему?
+Полная база 25+ кейсов: https://<АДРЕС-САЙТА>/troubleshoot.md
+Поддержка: @superwalletsru
 `;
 
 const FALLBACK_MANIFEST = {
@@ -840,8 +903,10 @@ const PREFLIGHT = {
 
 const state = {
   step: 0, tgUsername: '', tgUserId: '', os: null, preflight: {}, hermes: null, hermesPreflight: {},
-  provider: null, llmKey: '', preset: null, tgTokens: {}, selectedKnowledge: new Set(),
+  provider: null, llmKey: '', preset: null, tgTokens: {},
   sessionStart: null,
+  // === ключ доступа (P0.1) ===
+  accessKey: null, tariff: null, presetId: null, hasCritic: false, hasLessons: false, isPersonal: false,
 };
 
 function loadSession() {
@@ -850,22 +915,80 @@ function loadSession() {
     if (!raw) return;
     const s = JSON.parse(raw);
     Object.assign(state, s);
-    state.selectedKnowledge = new Set(s.selectedKnowledge || []);
   } catch (e) {}
 }
 function saveSession() {
-  const s = { ...state, selectedKnowledge: Array.from(state.selectedKnowledge) };
-  sessionStorage.setItem('aistack-installer-v2', JSON.stringify(s));
+  sessionStorage.setItem('aistack-installer-v2', JSON.stringify(state));
 }
 function clearAndExit() {
   sessionStorage.removeItem('aistack-installer-v2');
   location.reload();
 }
 
-async function sha256(str) {
-  const buf = new TextEncoder().encode(str);
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+// ===========================================================================
+// parseAccessKey — парсит ключ AIS-<TARIFF>-<PRESET>-<RANDOM>
+// возвращает { valid, error?, tariff, presetId, hasCritic, hasLessons, isPersonal, raw }
+// ===========================================================================
+function parseAccessKey(key) {
+  const trimmed = (key || '').trim();
+
+  // Старый формат → понятная подсказка
+  if (/^OPENCLAW/i.test(trimmed) || /^OPCLAW/i.test(trimmed)) {
+    return { valid: false, error: 'Этот ключ устарел. Новые ключи начинаются с AIS-. Напишите в поддержку @superwalletsru.' };
+  }
+
+  const parts = trimmed.toUpperCase().split('-');
+
+  if (parts.length !== 4 || parts[0] !== 'AIS') {
+    return { valid: false, error: 'Неправильный формат ключа. Ожидается AIS-TARIFF-PRESET-RANDOM (4 части через дефис).' };
+  }
+
+  const tariff = parts[1];
+  const preset = parts[2];
+  const random = parts[3];
+
+  const VALID_TARIFFS = ['MINI', 'START', 'PROFI', 'TEAM', 'PERSONAL'];
+  if (!VALID_TARIFFS.includes(tariff)) {
+    return { valid: false, error: `Неизвестный тариф: ${tariff}. Допустимые: ${VALID_TARIFFS.join(', ')}. Проверьте ключ из письма.` };
+  }
+
+  const BASIC_PRESETS = ['CONTENT', 'SALES', 'EXPERT', 'BUSINESS', 'SCHOOL', 'TECH'];
+
+  if (['PROFI', 'TEAM', 'PERSONAL'].includes(tariff)) {
+    if (preset !== 'FULL') {
+      return { valid: false, error: `Тариф ${tariff} требует сборку FULL, а ключ содержит ${preset}. Это ошибка системы — напишите @superwalletsru.` };
+    }
+  } else {
+    if (!BASIC_PRESETS.includes(preset)) {
+      return { valid: false, error: `Сборка ${preset} не существует. Для тарифа ${tariff} допустимы: ${BASIC_PRESETS.join(', ')}.` };
+    }
+  }
+
+  if (random.length < 6 || random.length > 12 || !/^[A-Z0-9]+$/.test(random)) {
+    return { valid: false, error: 'Случайная часть ключа некорректна (ожидается 6–12 символов A–Z / 0–9).' };
+  }
+
+  const PRESET_MAP = {
+    'CONTENT': 'content-team',
+    'SALES': 'sales-team',
+    'EXPERT': 'expert-team',
+    'BUSINESS': 'business-team',
+    'SCHOOL': 'school-team',
+    'TECH': 'tech-team',
+    'FULL': 'full-team'
+  };
+
+  const parsed = {
+    valid: true,
+    tariff: tariff.toLowerCase(),
+    presetId: PRESET_MAP[preset],
+    hasCritic: ['TEAM', 'PERSONAL'].includes(tariff),
+    hasLessons: ['START', 'TEAM', 'PERSONAL'].includes(tariff),
+    isPersonal: tariff === 'PERSONAL',
+    raw: trimmed
+  };
+  console.log('[parseAccessKey]', parsed); // дебаг
+  return parsed;
 }
 
 async function checkGate() {
@@ -874,16 +997,38 @@ async function checkGate() {
   const errEl = document.getElementById('gate-error');
   const pwd = pwdEl.value.trim();
   const tg  = tgEl.value.trim().replace(/^@/, '').toLowerCase();
-  if (!pwd || !tg) { errEl.textContent = 'Введите пароль и Telegram'; errEl.style.display = 'block'; return; }
-  const h = await sha256(pwd);
-  if (h !== ACCESS_HASH) { errEl.textContent = 'Пароль не подходит'; errEl.style.display = 'block'; pwdEl.classList.add('invalid'); setTimeout(() => pwdEl.classList.remove('invalid'), 600); return; }
-  if (WHITELIST_USERNAMES.length > 0 && !WHITELIST_USERNAMES.includes(tg)) { errEl.textContent = `@${tg} не в списке доступа. @superwalletsru.`; errEl.style.display = 'block'; return; }
-  errEl.style.display = 'none';
+
+  if (!pwd || !tg) {
+    errEl.textContent = 'Введите ключ и Telegram username';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const parsed = parseAccessKey(pwd);
+  if (!parsed.valid) {
+    errEl.textContent = parsed.error;
+    errEl.style.display = 'block';
+    pwdEl.classList.add('invalid');
+    setTimeout(() => pwdEl.classList.remove('invalid'), 600);
+    return;
+  }
+
+  // Сохраняем в state
+  state.accessKey = parsed.raw;
+  state.tariff = parsed.tariff;
+  state.presetId = parsed.presetId;
+  state.hasCritic = parsed.hasCritic;
+  state.hasLessons = parsed.hasLessons;
+  state.isPersonal = parsed.isPersonal;
+  state.preset = parsed.presetId;     // совместимость со старой логикой выбора пресета
+
   state.tgUsername = tg;
   state.sessionStart = Date.now();
-  document.getElementById('gate-status').textContent = 'authorized';
-  document.getElementById('gate-status').className = 'term-status authorized';
   saveSession();
+
+  document.getElementById('gate-status').textContent = `authorized · ${parsed.tariff.toUpperCase()}`;
+  document.getElementById('gate-status').className = 'term-status authorized';
+  errEl.style.display = 'none';
   goToStep(1);
   startSessionTimer();
 }
@@ -905,7 +1050,7 @@ function updateSessionTimer() {
   if (remaining === 0) clearAndExit();
 }
 
-const STEP_NAMES = ['', 'preflight + openclaw', 'hermes', 'нейросеть', 'команда', 'telegram-боты', 'доп.knowledge', 'установщик'];
+const STEP_NAMES = ['', 'preflight + openclaw', 'hermes', 'нейросеть', 'команда', 'telegram-боты', 'установщик'];
 function goToStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById(n === 0 ? 'step-gate' : 'step-' + n).classList.add('active');
@@ -914,7 +1059,7 @@ function goToStep(n) {
   if (n >= 1) {
     document.getElementById('progress').style.display = 'block';
     document.getElementById('progress-fill').style.width = (n / 7 * 100) + '%';
-    document.getElementById('progress-label').textContent = `шаг ${n} из 7`;
+    document.getElementById('progress-label').textContent = `шаг ${n} из 6`;
     document.getElementById('progress-name').textContent = '// ' + STEP_NAMES[n];
   } else document.getElementById('progress').style.display = 'none';
   if (n === 2) {
@@ -930,11 +1075,10 @@ function goToStep(n) {
   }
   if (n === 4) renderPresets();
   if (n === 5) renderTgTokens();
-  if (n === 6) renderKnowledge();
-  if (n === 7) renderFinal();
+  if (n === 6) renderFinal();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function goNext() { if (state.step < 7) goToStep(state.step + 1); }
+function goNext() { if (state.step < 6) goToStep(state.step + 1); }
 function goBack() { if (state.step > 1) goToStep(state.step - 1); }
 
 function pickSingle(el, key) {
@@ -1050,8 +1194,6 @@ function updateHermesPreflightCounter() {
 }
 
 const LLM_PATTERNS = {
-  'claude-cli': { noKey: true, hint:'ключ не нужен · CLI авторизуется через `claude login` после установки' },
-  'codex-cli':  { noKey: true, hint:'ключ не нужен · CLI авторизуется через ChatGPT-аккаунт при первом запуске' },
   anthropic:    { prefix:'sk-ant-', hint:'формат: sk-ant-api03-... · console.anthropic.com · держите $5+ на балансе' },
   openai:       { prefix:'sk-',     hint:'формат: sk-... · platform.openai.com/api-keys · депозит от $5' },
   proxyapi:     { prefix:'sk-',     hint:'формат: sk-... · proxyapi.ru · оплата картой РФ' },
@@ -1108,14 +1250,48 @@ function validateLlmKey() {
 
 function renderPresets() {
   const wrap = document.getElementById('presets-list');
-  const basics = MANIFEST.presets.filter(p => !p.flagship);
-  const flagship = MANIFEST.presets.find(p => p.flagship);
-  wrap.innerHTML = basics.map(p => presetHtml(p)).join('') + (flagship ? presetHtml(flagship) : '');
-  if (state.preset) {
-    const el = document.querySelector(`[data-preset-id="${state.preset}"]`);
-    if (el) el.classList.add('selected');
-    document.getElementById('btn-next-4').disabled = false;
+  if (!wrap) return;
+
+  // Определяем доступную сборку по тарифу из ключа
+  let availablePresetId;
+  if (['profi', 'team', 'personal'].includes(state.tariff)) {
+    availablePresetId = 'full-team';
+  } else if (['mini', 'start'].includes(state.tariff)) {
+    availablePresetId = state.presetId;
+  } else {
+    // fallback на случай прямого захода без gate (не должно происходить)
+    availablePresetId = state.preset || state.presetId;
   }
+
+  const preset = MANIFEST.presets.find(p => p.id === availablePresetId);
+  if (!preset) {
+    wrap.innerHTML = `<div style="padding:14px 16px;border:1px solid var(--red);border-radius:8px;color:var(--red);">Ошибка: сборка <code>${availablePresetId}</code> не найдена в манифесте. Напишите @superwalletsru.</div>`;
+    document.getElementById('btn-next-4').disabled = true;
+    return;
+  }
+
+  // Рендерим единственную карточку — выбора нет
+  wrap.innerHTML = `
+    <div class="preset-card selected ${preset.flagship ? 'flagship' : ''}" data-preset-id="${preset.id}">
+      <div class="preset-head">
+        <div class="preset-title">${preset.emoji} ${preset.name}</div>
+        <div><span class="preset-price-new">по тарифу ${(state.tariff || '').toUpperCase()}</span></div>
+      </div>
+      <div class="preset-desc">${preset.description}</div>
+      <div class="preset-audience">для: ${preset.audience}</div>
+      <div class="preset-agents">${preset.agents.map(aid => {
+        const a = MANIFEST.agents.find(x => x.id === aid);
+        return `<span class="preset-agent-tag">${a ? a.emoji + ' ' + a.name : aid}</span>`;
+      }).join('')}</div>
+      <div style="margin-top:10px;font-size:12px;color:var(--green);">✓ это ваша сборка — куплена по ключу</div>
+    </div>
+  `;
+
+  // Фиксируем preset в state
+  state.preset = availablePresetId;
+  saveSession();
+
+  document.getElementById('btn-next-4').disabled = false;
   updatePresetCounter();
 }
 function presetHtml(p) {
@@ -1256,37 +1432,8 @@ function updateTgCounter() {
   document.getElementById('btn-next-5').disabled = (ok < preset.agents.length) || !hasUserId;
 }
 
-function renderKnowledge() {
-  const preset = MANIFEST.presets.find(p => p.id === state.preset);
-  const bundled = preset && preset.bundled_knowledge ? new Set(preset.bundled_knowledge) : new Set();
-  const wrap = document.getElementById('knowledge-list');
-  if (bundled.size > 0) {
-    wrap.innerHTML = `<div class="info-box"><strong>✓ Все 7 AIStack Originals уже включены</strong> в пресет «${preset.name}» бесплатно.</div>
-      <ul style="margin-left: 18px; font-size: 13px; color: var(--text-2);">${MANIFEST.knowledge.filter(k => bundled.has(k.id)).map(k => `<li>${k.name}</li>`).join('')}</ul>`;
-    return;
-  }
-  wrap.innerHTML = MANIFEST.knowledge.map(k => {
-    const sel = state.selectedKnowledge.has(k.id);
-    const agent = MANIFEST.agents.find(a => a.id === k.agent);
-    return `<div class="knowledge-row ${sel ? 'selected' : ''}" onclick="toggleKnowledge('${k.id}')">
-      <div class="knowledge-check"></div>
-      <div class="knowledge-name">${k.name}</div>
-      <span class="knowledge-agent">${agent ? agent.emoji + ' ' + agent.name : k.agent}</span>
-      <span class="knowledge-price">${k.price} ₽</span>
-    </div>`;
-  }).join('');
-  updateKnowledgeCounter();
-}
-function toggleKnowledge(id) {
-  if (state.selectedKnowledge.has(id)) state.selectedKnowledge.delete(id);
-  else state.selectedKnowledge.add(id);
-  saveSession();
-  renderKnowledge();
-}
-function updateKnowledgeCounter() {
-  const total = MANIFEST.knowledge.filter(k => state.selectedKnowledge.has(k.id)).reduce((s,k) => s+k.price, 0);
-  document.getElementById('knowledge-counter').textContent = `выбрано: ${state.selectedKnowledge.size} на сумму ${total} ₽`;
-}
+// renderKnowledge / toggleKnowledge / updateKnowledgeCounter — удалены в P0.3
+// Шаг «Доп.knowledge» убран — knowledge подгружается автоматически по bundled_knowledge пресета.
 
 function toggleEye(inputId, btn) {
   const inp = document.getElementById(inputId);
@@ -1299,21 +1446,19 @@ function copyHealthWin(btn) { copyText(btn, 'try { (iwr http://localhost:7777/he
 function renderFinal() {
   const preset = MANIFEST.presets.find(p => p.id === state.preset);
   const agentsList = preset ? preset.agents.map(aid => { const a = MANIFEST.agents.find(x => x.id === aid); return a ? a.name : aid; }).join(', ') : '';
-  const knowledgeCnt = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge.length : state.selectedKnowledge.size;
-  const knowledgePrice = (preset && preset.bundled_knowledge) ? 0 : MANIFEST.knowledge.filter(k => state.selectedKnowledge.has(k.id)).reduce((s,k) => s+k.price, 0);
   document.getElementById('summary').innerHTML = `
     <div class="summary-row"><span class="summary-key">// telegram</span><span class="summary-val">@${state.tgUsername}</span></div>
     <div class="summary-row"><span class="summary-key">// ос</span><span class="summary-val">${state.os}</span></div>
     <div class="summary-row"><span class="summary-key">// hermes</span><span class="summary-val">${state.hermes === 'ok' ? '✓ установлен' : '⏭ поставит скрипт'}</span></div>
     <div class="summary-row"><span class="summary-key">// провайдер</span><span class="summary-val">${state.provider}</span></div>
-    <div class="summary-row"><span class="summary-key">// пресет</span><span class="summary-val">${preset ? preset.name : '?'} · ${preset ? preset.price : 0} ₽</span></div>
+    <div class="summary-row"><span class="summary-key">// пресет</span><span class="summary-val">${preset ? preset.name : '?'}</span></div>
     <div class="summary-row"><span class="summary-key">// команда (${preset ? preset.agents.length : 0})</span><span class="summary-val">${agentsList}</span></div>
     <div class="summary-row"><span class="summary-key">// telegram-боты</span><span class="summary-val">${Object.values(state.tgTokens).filter(t=>t.status==='ok').length} проверено</span></div>
-    <div class="summary-row"><span class="summary-key">// knowledge (${knowledgeCnt})</span><span class="summary-val">${knowledgePrice > 0 ? '+' + knowledgePrice + ' ₽' : 'входит'}</span></div>
     <div class="summary-row"><span class="summary-key">// ключ</span><span class="summary-val">•••${state.llmKey.slice(-4)}</span></div>
-    <div class="summary-row" style="font-weight:700; border-top:1px solid var(--border-2); margin-top:4px; padding-top:8px;"><span class="summary-key">// итого</span><span class="summary-val" style="color: var(--accent);">${(preset ? preset.price : 0) + knowledgePrice} ₽</span></div>
   `;
-  document.getElementById('dl-main-name').textContent = state.os === 'windows' ? 'setup.ps1' : 'setup.sh';
+  // dl-main-name был удалён в P0.4 (одна кнопка bundle.zip) — guard на случай если ещё где-то остался
+  const dlEl = document.getElementById('dl-main-name');
+  if (dlEl) dlEl.textContent = state.os === 'windows' ? 'setup.ps1' : 'setup.sh';
   renderTroubleshoot();
 }
 
@@ -1363,7 +1508,7 @@ const TROUBLESHOOT_TOP10 = [
   {
     sev: 'amber', tag: 'REGRESSION',
     q: 'После обновления openclaw боты сломались',
-    cause: 'Регрессия в 2026.04.25 — массовое падение Gateway. Подтверждено в чате 20+ людей.',
+    cause: 'Регрессия в версии 2026.04.25 — известный баг массового падения Gateway. Устранён в стабильной 2026.4.24.',
     fixes: [
       'npm install -g openclaw@2026.4.24',
       'openclaw gateway restart'
@@ -1530,7 +1675,7 @@ function runDryRun() {
   const preset = MANIFEST.presets.find(p => p.id === state.preset);
   const items = PREFLIGHT[state.os] || [];
   const agents = preset ? preset.agents : [];
-  const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : Array.from(state.selectedKnowledge);
+  const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : [];
   const knowledge = MANIFEST.knowledge.filter(k => knowledgeIds.includes(k.id));
   const lines = [
     `<span class="accent">▶ DRY-RUN · ${new Date().toLocaleString('ru')}</span>`,
@@ -1596,7 +1741,7 @@ function tgExportsPS(agents) {
 function generateBashScript() {
   const preset = MANIFEST.presets.find(p => p.id === state.preset);
   const agents = preset ? preset.agents : [];
-  const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : Array.from(state.selectedKnowledge);
+  const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : [];
   const knowledge = MANIFEST.knowledge.filter(k => knowledgeIds.includes(k.id));
   const isVps = state.os === 'vps';
   return `#!/usr/bin/env bash
@@ -1660,7 +1805,7 @@ echo "  Telegram: напишите @${(state.tgTokens.coordinator||{}).botName |
 function generatePowerShellScript() {
   const preset = MANIFEST.presets.find(p => p.id === state.preset);
   const agents = preset ? preset.agents : [];
-  const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : Array.from(state.selectedKnowledge);
+  const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : [];
   const knowledge = MANIFEST.knowledge.filter(k => knowledgeIds.includes(k.id));
   return `# AIStack Installer v2 · ${preset ? preset.name : '?'}
 # При запуске вручную: powershell -ExecutionPolicy Bypass -File .\\setup.ps1
@@ -1759,7 +1904,7 @@ async function downloadBundle() {
   const zip = new JSZip();
   const preset = MANIFEST.presets.find(p => p.id === state.preset);
   const agents = preset ? preset.agents : [];
-  const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : Array.from(state.selectedKnowledge);
+  const knowledgeIds = (preset && preset.bundled_knowledge) ? preset.bundled_knowledge : [];
   const ext = state.os === 'windows' ? 'ps1' : 'sh';
   zip.file('setup.' + ext, state.os === 'windows' ? generatePowerShellScript() : generateBashScript());
   if (state.os === 'windows') {
@@ -1816,6 +1961,7 @@ pause
     if (c) { zip.folder('knowledge').file(`${kid}.md`, c); okK++; }
   }
   zip.file('WIZARD-GUIDE.md', WIZARD_GUIDE_CONTENT);
+  zip.file('aistack-troubleshoot.md', TROUBLESHOOT_CONTENT);
   zip.file('README.txt', `AIStack Bundle · @${state.tgUsername} · ${preset ? preset.name : '?'}\nЗапустить: ${state.os === 'windows' ? 'powershell -ExecutionPolicy Bypass -File .\\setup.ps1' : 'bash setup.sh'}\n\nВажно: после Stage 3 запустится интерактивный Hermes Setup Wizard.\nСм. WIZARD-GUIDE.md — там пошаговая инструкция что на каком экране нажимать.\n`);
   const blob = await zip.generateAsync({ type: 'blob' });
   const url = URL.createObjectURL(blob);
