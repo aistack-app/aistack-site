@@ -1403,5 +1403,40 @@
   });
 </script>
 
+<!-- ── Плавающий виджет: чат с AI-админом (демо) ───────────────────────────
+     Кнопка ведёт в Telegram к боту-администратору. Меняется одной строкой:
+     CHAT_BOT_URL ниже. Сейчас — демо-бот AI-админа.
+     ВАЖНО: чтобы посетители реально могли поговорить, у бота должен быть
+     открытый доступ (dmPolicy: open) и заполнен демо-BUSINESS.md. С
+     allowlist на один ID посторонние получат отказ. Если демо не готово —
+     поставь сюда https://t.me/superwalletsru (живой контакт). -->
+<style>
+  #aistack-chat-fab{position:fixed;right:22px;bottom:22px;z-index:9999;
+    display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:999px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;
+    font:600 15px/1 -apple-system,system-ui,sans-serif;text-decoration:none;
+    box-shadow:0 8px 28px rgba(124,92,255,.45);cursor:pointer;
+    transition:transform .15s ease,box-shadow .15s ease}
+  #aistack-chat-fab:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(124,92,255,.6)}
+  #aistack-chat-fab .dot{width:8px;height:8px;border-radius:50%;background:#6dffaf;
+    box-shadow:0 0 0 0 rgba(109,255,175,.7);animation:aistackPulse 2s infinite}
+  #aistack-chat-fab .ttl{font-weight:700}
+  #aistack-chat-fab .sub{font-weight:500;opacity:.85;font-size:12px}
+  #aistack-chat-fab .txt{display:flex;flex-direction:column;gap:2px}
+  @keyframes aistackPulse{0%{box-shadow:0 0 0 0 rgba(109,255,175,.7)}
+    70%{box-shadow:0 0 0 10px rgba(109,255,175,0)}100%{box-shadow:0 0 0 0 rgba(109,255,175,0)}}
+  @media(max-width:520px){#aistack-chat-fab .sub{display:none}}
+</style>
+<a id="aistack-chat-fab" target="_blank" rel="noopener">
+  <span class="dot"></span>
+  <span class="txt"><span class="ttl">💬 Поговорить с AI-админом</span>
+  <span class="sub">демо — запишет и ответит про услуги</span></span>
+</a>
+<script>
+  // Адрес чата. Поменяй на свой демо-бот или на https://t.me/superwalletsru
+  var CHAT_BOT_URL = "https://t.me/superwalletsru";
+  document.getElementById('aistack-chat-fab').href = CHAT_BOT_URL;
+</script>
+
 </body>
 </html>
